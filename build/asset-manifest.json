@@ -1,25 +1,35 @@
 {
   "files": {
-    "main.js": "/static/js/main.4e06c474.chunk.js",
-    "main.js.map": "/static/js/main.4e06c474.chunk.js.map",
+    "main.js": "/static/js/main.659af141.chunk.js",
+    "main.js.map": "/static/js/main.659af141.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.92ee656d.js",
     "runtime-main.js.map": "/static/js/runtime-main.92ee656d.js.map",
-    "static/js/2.bb74c779.chunk.js": "/static/js/2.bb74c779.chunk.js",
-    "static/js/2.bb74c779.chunk.js.map": "/static/js/2.bb74c779.chunk.js.map",
+    "static/js/2.bc2853b4.chunk.js": "/static/js/2.bc2853b4.chunk.js",
+    "static/js/2.bc2853b4.chunk.js.map": "/static/js/2.bc2853b4.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.571c2d5b3acc95eaec1973da6fabe03b.js": "/precache-manifest.571c2d5b3acc95eaec1973da6fabe03b.js",
+    "precache-manifest.3279865b54e42d9b17132b916c07c483.js": "/precache-manifest.3279865b54e42d9b17132b916c07c483.js",
     "service-worker.js": "/service-worker.js",
-    "static/js/2.bb74c779.chunk.js.LICENSE.txt": "/static/js/2.bb74c779.chunk.js.LICENSE.txt",
+    "static/js/2.bc2853b4.chunk.js.LICENSE.txt": "/static/js/2.bc2853b4.chunk.js.LICENSE.txt",
+    "static/media/calendario.8b873965.svg": "/static/media/calendario.8b873965.svg",
     "static/media/img1.jpg": "/static/media/img1.04865a23.jpg",
     "static/media/img2.jpg": "/static/media/img2.4afdd52a.jpg",
     "static/media/img3.png": "/static/media/img3.656507f9.png",
     "static/media/img4.jpg": "/static/media/img4.34c6e2cd.jpg",
     "static/media/img5.jpeg": "/static/media/img5.2da5fb58.jpeg",
-    "static/media/img6.jpg": "/static/media/img6.d600a66d.jpg"
+    "static/media/img6.jpg": "/static/media/img6.d600a66d.jpg",
+    "static/media/laboratory.127ee9d5.svg": "/static/media/laboratory.127ee9d5.svg",
+    "static/media/logo.9b7ec31d.svg": "/static/media/logo.9b7ec31d.svg",
+    "static/media/logo1.c837df35.svg": "/static/media/logo1.c837df35.svg",
+    "static/media/medicos.f7d00b53.svg": "/static/media/medicos.f7d00b53.svg",
+    "static/media/phone.cef7e09f.svg": "/static/media/phone.cef7e09f.svg",
+    "static/media/porcentaje.4d4d7ee9.svg": "/static/media/porcentaje.4d4d7ee9.svg",
+    "static/media/servicios.bd7b3f88.svg": "/static/media/servicios.bd7b3f88.svg",
+    "static/media/trajan-pro.otf": "/static/media/trajan-pro.b11f35f7.otf",
+    "static/media/usuario.1df856d9.svg": "/static/media/usuario.1df856d9.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.92ee656d.js",
-    "static/js/2.bb74c779.chunk.js",
-    "static/js/main.4e06c474.chunk.js"
+    "static/js/2.bc2853b4.chunk.js",
+    "static/js/main.659af141.chunk.js"
   ]
 }
