@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/static/js/main.bdc185ca.chunk.js",
-    "main.js.map": "/static/js/main.bdc185ca.chunk.js.map",
+    "main.js": "/static/js/main.2828f2df.chunk.js",
+    "main.js.map": "/static/js/main.2828f2df.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.92ee656d.js",
     "runtime-main.js.map": "/static/js/runtime-main.92ee656d.js.map",
     "static/js/2.5d74ea95.chunk.js": "/static/js/2.5d74ea95.chunk.js",
     "static/js/2.5d74ea95.chunk.js.map": "/static/js/2.5d74ea95.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.da4efb23ea45b79ec8dd52428fd3793b.js": "/precache-manifest.da4efb23ea45b79ec8dd52428fd3793b.js",
+    "precache-manifest.22f9b32c8f914c86719855b4f7e0ba62.js": "/precache-manifest.22f9b32c8f914c86719855b4f7e0ba62.js",
     "service-worker.js": "/service-worker.js",
     "static/js/2.5d74ea95.chunk.js.LICENSE.txt": "/static/js/2.5d74ea95.chunk.js.LICENSE.txt",
     "static/media/Montserrat-Bold.ttf": "/static/media/Montserrat-Bold.ade91f47.ttf",
@@ -35,6 +35,6 @@
   "entrypoints": [
     "static/js/runtime-main.92ee656d.js",
     "static/js/2.5d74ea95.chunk.js",
-    "static/js/main.bdc185ca.chunk.js"
+    "static/js/main.2828f2df.chunk.js"
   ]
 }
