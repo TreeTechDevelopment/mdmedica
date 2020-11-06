@@ -5,5 +5,6 @@ const router = express.Router();
 const { handleClient } = require('../controllers/client')
 
 router.get('/', handleClient)
+router.get('/medicos', handleClient)
 
 module.exports = router;

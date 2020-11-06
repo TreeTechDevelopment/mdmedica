@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.js": "/static/js/main.2828f2df.chunk.js",
-    "main.js.map": "/static/js/main.2828f2df.chunk.js.map",
+    "main.js": "/static/js/main.193deaa4.chunk.js",
+    "main.js.map": "/static/js/main.193deaa4.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.92ee656d.js",
     "runtime-main.js.map": "/static/js/runtime-main.92ee656d.js.map",
-    "static/js/2.5d74ea95.chunk.js": "/static/js/2.5d74ea95.chunk.js",
-    "static/js/2.5d74ea95.chunk.js.map": "/static/js/2.5d74ea95.chunk.js.map",
+    "static/js/2.dc5c9dc3.chunk.js": "/static/js/2.dc5c9dc3.chunk.js",
+    "static/js/2.dc5c9dc3.chunk.js.map": "/static/js/2.dc5c9dc3.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.22f9b32c8f914c86719855b4f7e0ba62.js": "/precache-manifest.22f9b32c8f914c86719855b4f7e0ba62.js",
+    "precache-manifest.978784992a8d43ed595072302b323075.js": "/precache-manifest.978784992a8d43ed595072302b323075.js",
     "service-worker.js": "/service-worker.js",
-    "static/js/2.5d74ea95.chunk.js.LICENSE.txt": "/static/js/2.5d74ea95.chunk.js.LICENSE.txt",
+    "static/js/2.dc5c9dc3.chunk.js.LICENSE.txt": "/static/js/2.dc5c9dc3.chunk.js.LICENSE.txt",
     "static/media/Montserrat-Bold.ttf": "/static/media/Montserrat-Bold.ade91f47.ttf",
     "static/media/Montserrat-Medium.ttf": "/static/media/Montserrat-Medium.c8b6e083.ttf",
     "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.ee653992.ttf",
@@ -26,7 +26,7 @@
     "static/media/logo-white.d600048c.svg": "/static/media/logo-white.d600048c.svg",
     "static/media/logo1.f71ef8d8.svg": "/static/media/logo1.f71ef8d8.svg",
     "static/media/medicos.2e2d6029.svg": "/static/media/medicos.2e2d6029.svg",
-    "static/media/phone.cef7e09f.svg": "/static/media/phone.cef7e09f.svg",
+    "static/media/phone.f4c2f1cc.svg": "/static/media/phone.f4c2f1cc.svg",
     "static/media/porcentaje.447a5667.svg": "/static/media/porcentaje.447a5667.svg",
     "static/media/servicios.ed4957ce.svg": "/static/media/servicios.ed4957ce.svg",
     "static/media/trajan-pro.otf": "/static/media/trajan-pro.b11f35f7.otf",
@@ -34,7 +34,7 @@
   },
   "entrypoints": [
     "static/js/runtime-main.92ee656d.js",
-    "static/js/2.5d74ea95.chunk.js",
-    "static/js/main.2828f2df.chunk.js"
+    "static/js/2.dc5c9dc3.chunk.js",
+    "static/js/main.193deaa4.chunk.js"
   ]
 }

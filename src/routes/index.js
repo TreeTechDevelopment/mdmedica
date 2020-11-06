@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
 
-const routersClient = require('./client')
+const routesClient = require('./client')
+const routesDoctor = require('./doctors')
 
-app.use(routersClient)
+app.use(routesClient)
+app.use(routesDoctor)
 
 module.exports = app;
