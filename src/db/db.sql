@@ -18,6 +18,19 @@ CREATE TABLE servicios(
     nombre VARCHAR(40) NOT NULL,
     descripcion TEXT NOT NULL,
     estrellas INT DEFAULT 0,
+    precio INT NOT NULL,
+    olprecio INT NOT NULL,
+    tipo INT NOT NULL,
+    PRIMARY KEY (id)
+    CONSTRAINT fk_tipo FOREIGN KEY (tipo) REFERENCES laboratorios(id)
+)
+
+CREATE TABLE laboratorios(
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(40) NOT NULL,
+    descripcion TEXT NOT NULL,
+    estrellas INT DEFAULT 0,
+    imagen varchar(200) NOT NULL,
     PRIMARY KEY (id)
 )
 
@@ -28,7 +41,7 @@ CREATE TABLE medicos(
     estrellas INT DEFAULT 0,
     cargo VARCHAR(20) NOT NULL,
     tipo VARCHAR(20) NOT NULL,
-    imagen VARCHAR(50) NOT NULL,
+    imagen VARCHAR(200) NOT NULL,
     PRIMARY KEY (id)
 )
 
@@ -63,3 +76,7 @@ CREATE TABLE citas(
     CONSTRAINT fk_cliente FOREIGN KEY (cliente) REFERENCES clientes(id),
     CONSTRAINT fk_servicio_cita FOREIGN KEY (servicio) REFERENCES servicios(id)
 )
+
+INSERT INTO medicos (nombre, descripcion,estrellas,cargo,tipo,imagen) VALUES('NOMBRE MÉDICO', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'Médico General', 'MEDICO', 'https://mdmedica.herokuapp.com/static/media/img7.jpg')
+
+INSERT INTO laboratorios (nombre, descripcion,estrellas,imagen) VALUES('HEMATOLOGÍA', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'https://mdmedica.herokuapp.com/static/media/img8.jpg')
