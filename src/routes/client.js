@@ -6,6 +6,7 @@ const { handleClient } = require('../controllers/client')
 
 router.get('/', handleClient)
 router.get('/medicos', handleClient)
+router.get('/medicos/:id', handleClient)
 router.get('/laboratorios', handleClient)
 
 module.exports = router;

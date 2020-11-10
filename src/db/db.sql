@@ -60,9 +60,12 @@ CREATE TABLE reviews(
     texto TEXT NOT NULL,
     medico INT DEFAULT NULL,
     servicio INT DEFAULT NULL,
+    cliente INT NOT NULL,
+    estrellas INT DEFAULT 0,
     PRIMARY KEY (id),
     CONSTRAINT fk_medico FOREIGN KEY (medico) REFERENCES medicos(id),
-    CONSTRAINT fk_servicio FOREIGN KEY (servicio) REFERENCES servicios(id)
+    CONSTRAINT fk_servicio FOREIGN KEY (servicio) REFERENCES servicios(id),
+    CONSTRAINT fk_cleinte_review FOREIGN KEY (cliente) REFERENCES clientes(id)
 )
 
 CREATE TABLE citas(
@@ -79,4 +82,10 @@ CREATE TABLE citas(
 
 INSERT INTO medicos (nombre, descripcion,estrellas,cargo,tipo,imagen) VALUES('NOMBRE MÉDICO', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'Médico General', 'MEDICO', 'https://mdmedica.herokuapp.com/static/media/img7.jpg')
 
-INSERT INTO laboratorios (nombre, descripcion,estrellas,imagen) VALUES('HEMATOLOGÍA', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'https://mdmedica.herokuapp.com/static/media/img8.jpg')
+INSERT INTO laboratorios (nombre, descripcion,estrellas,imagen) VALUES('HEMATOLOGÍA', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'http://localhost:3000/static/media/img8.jpg')
+
+insert into servicios (nombre, descripcion, estrellas, precio, olprecio, tipo) values ('Biometría Hemática', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 100, 80, (select id from laboratorios where nombre = 'HEMATOLOGÍA'))
+
+insert into clientes (nombre, apellido, edad, sangre, contrasena, email) values ('Nombre', 'Apellido', 35, 'B-', 'contrasena', 'prueba@gmail.com')
+
+insert into reviews (texto, medico, cliente, estrellas) values ('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 1, 5)
