@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "d003100789924857d2fcae99b3934d7d",
+    "revision": "f84b388032144b35a64f1999d05e7bf1",
     "url": "/index.html"
   },
   {
-    "revision": "dd294ae6d642a4c5c736",
-    "url": "/static/js/2.e15074c8.chunk.js"
+    "revision": "dcd3b46cd30a86e75f6d",
+    "url": "/static/js/2.ba04b2a2.chunk.js"
   },
   {
     "revision": "4df4c58fd3db8af31000da1d75d059ea",
-    "url": "/static/js/2.e15074c8.chunk.js.LICENSE.txt"
+    "url": "/static/js/2.ba04b2a2.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "385c160a471549e4a96c",
-    "url": "/static/js/main.29582e67.chunk.js"
+    "revision": "c8071c89f0a1a45d5a27",
+    "url": "/static/js/main.10a9d856.chunk.js"
   },
   {
     "revision": "ec9875811aa0f00c2e31",
@@ -38,6 +38,14 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "1de41e0c0ba0535879969984cdb80820",
     "url": "/static/media/background_home.1de41e0c.jpg"
+  },
+  {
+    "revision": "f77ef148bddb4e95d73a104baacb7f1e",
+    "url": "/static/media/coagulacion.f77ef148.svg"
+  },
+  {
+    "revision": "2fdb339c79d4c26ee52762d8ee4516d9",
+    "url": "/static/media/hematologia.2fdb339c.svg"
   },
   {
     "revision": "c62b467c49f84587e7fb23582bd5d3a6",
@@ -90,6 +98,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "447a5667598fb0ecf5e3b6e8086527b8",
     "url": "/static/media/porcentaje.447a5667.svg"
+  },
+  {
+    "revision": "51c052479d15f2156c0ee877083441bc",
+    "url": "/static/media/quimica-sanguinea.51c05247.svg"
   },
   {
     "revision": "ed4957ce62440197eae141577053eaab",

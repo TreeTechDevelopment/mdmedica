@@ -1,20 +1,22 @@
 {
   "files": {
-    "main.js": "/static/js/main.29582e67.chunk.js",
-    "main.js.map": "/static/js/main.29582e67.chunk.js.map",
+    "main.js": "/static/js/main.10a9d856.chunk.js",
+    "main.js.map": "/static/js/main.10a9d856.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.92ee656d.js",
     "runtime-main.js.map": "/static/js/runtime-main.92ee656d.js.map",
-    "static/js/2.e15074c8.chunk.js": "/static/js/2.e15074c8.chunk.js",
-    "static/js/2.e15074c8.chunk.js.map": "/static/js/2.e15074c8.chunk.js.map",
+    "static/js/2.ba04b2a2.chunk.js": "/static/js/2.ba04b2a2.chunk.js",
+    "static/js/2.ba04b2a2.chunk.js.map": "/static/js/2.ba04b2a2.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.a56e9588cb32af1199caee4d2f80bf8e.js": "/precache-manifest.a56e9588cb32af1199caee4d2f80bf8e.js",
+    "precache-manifest.8b742f26d0d338c97ec264fe25daddd3.js": "/precache-manifest.8b742f26d0d338c97ec264fe25daddd3.js",
     "service-worker.js": "/service-worker.js",
-    "static/js/2.e15074c8.chunk.js.LICENSE.txt": "/static/js/2.e15074c8.chunk.js.LICENSE.txt",
+    "static/js/2.ba04b2a2.chunk.js.LICENSE.txt": "/static/js/2.ba04b2a2.chunk.js.LICENSE.txt",
     "static/media/Montserrat-Bold.ttf": "/static/media/Montserrat-Bold.ade91f47.ttf",
     "static/media/Montserrat-Italic.ttf": "/static/media/Montserrat-Italic.a7063e0c.ttf",
     "static/media/Montserrat-Medium.ttf": "/static/media/Montserrat-Medium.c8b6e083.ttf",
     "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.ee653992.ttf",
     "static/media/background_home.jpg": "/static/media/background_home.1de41e0c.jpg",
+    "static/media/coagulacion.f77ef148.svg": "/static/media/coagulacion.f77ef148.svg",
+    "static/media/hematologia.2fdb339c.svg": "/static/media/hematologia.2fdb339c.svg",
     "static/media/img1.jpg": "/static/media/img1.c62b467c.jpg",
     "static/media/img2.jpg": "/static/media/img2.18e3b899.jpg",
     "static/media/img3.jpg": "/static/media/img3.174d7107.jpg",
@@ -28,13 +30,14 @@
     "static/media/medicos.2e2d6029.svg": "/static/media/medicos.2e2d6029.svg",
     "static/media/phone.f4c2f1cc.svg": "/static/media/phone.f4c2f1cc.svg",
     "static/media/porcentaje.447a5667.svg": "/static/media/porcentaje.447a5667.svg",
+    "static/media/quimica-sanguinea.51c05247.svg": "/static/media/quimica-sanguinea.51c05247.svg",
     "static/media/servicios.ed4957ce.svg": "/static/media/servicios.ed4957ce.svg",
     "static/media/trajan-pro.otf": "/static/media/trajan-pro.b11f35f7.otf",
     "static/media/usuario.9350d421.svg": "/static/media/usuario.9350d421.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.92ee656d.js",
-    "static/js/2.e15074c8.chunk.js",
-    "static/js/main.29582e67.chunk.js"
+    "static/js/2.ba04b2a2.chunk.js",
+    "static/js/main.10a9d856.chunk.js"
   ]
 }
