@@ -1,3 +1,4 @@
+const { query } = require('../db/db')
 const db = require('../db/db')
 
 const getAllMedicos = async (req, res) => {
@@ -13,15 +14,24 @@ const getAllMedicos = async (req, res) => {
 
 const getMedico = async (req, res) => {
     try{
+        
+        if(JSON.stringify(req.query) === "{}" && !req.query.reviews){ return res.sendStatus(400) }
+
+        const getReviews = req.query.reviews
         const { id } = req.params
         if(!id){ return res.sendStatus(400) }
 
         let doctor = await db.query('SELECT * FROM medicos WHERE id = ?', [id])
         if(doctor.length === 0){ return res.sendStatus(400) }
 
-        let reviews = await db.query('SELECT texto, nombre, apellido, estrellas, reviews.id FROM reviews INNER JOIN clientes ON reviews.medico = ? WHERE aprobado = 1', [id])
+        let response = { info: doctor[0] }
 
-        res.json({ info: doctor[0], reviews })
+        if(getReviews === "true"){
+            let reviews = await db.query('SELECT texto, nombre, apellido, estrellas, reviews.id FROM reviews INNER JOIN clientes ON reviews.medico = ? WHERE aprobado = 1', [id])
+            response.reviews = reviews
+        }
+        
+        res.json(response)
             
     }catch(e){
         console.log(e)
