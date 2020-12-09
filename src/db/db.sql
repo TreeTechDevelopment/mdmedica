@@ -80,6 +80,14 @@ CREATE TABLE citas(
     CONSTRAINT fk_servicio_cita FOREIGN KEY (servicio) REFERENCES servicios(id)
 )
 
+CREATE TABLE textos(
+    id INT NOT NULL AUTO_INCREMENT,
+    texto1 VARCHAR(200) DEFAULT NULL,
+    texto2 VARCHAR(200) DEFAULT NULL,
+    texto3 VARCHAR(200) DEFAULT NULL,
+    PRIMARY KEY (id)
+)
+
 INSERT INTO medicos (nombre, descripcion,estrellas,cargo,tipo,imagen) VALUES('NOMBRE MÉDICO', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'Médico General', 'MEDICO', 'https://mdmedica.herokuapp.com/static/media/img7.jpg')
 
 INSERT INTO laboratorios (nombre, descripcion,estrellas,imagen) VALUES('HEMATOLOGÍA', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'http://localhost:3000/static/media/img8.jpg')
@@ -89,3 +97,5 @@ insert into servicios (nombre, descripcion, estrellas, precio, olprecio, tipo) v
 insert into clientes (nombre, apellido, edad, sangre, contrasena, email) values ('Nombre', 'Apellido', 35, 'B-', 'contrasena', 'prueba@gmail.com')
 
 insert into reviews (texto, medico, cliente, estrellas) values ('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 1, 5)
+
+insert into textos (texto1, texto2, texto3) values ('15% DE DESCUENTO', 'EN CUALQUIER SERVICIO', 'PAGANDO AQUÍ')

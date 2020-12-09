@@ -1,4 +1,3 @@
-const { query } = require('../db/db')
 const db = require('../db/db')
 
 const getAllMedicos = async (req, res) => {
