@@ -43,13 +43,19 @@ const verifyUser = async (req, res) => {
 
         const { token } = req.headers.authorization.slice(6)
 
+        console.log(token)
+
         if(!token){ return res.sendStatus(400) }
 
         const { err, id } = await validTokenEmail(token)
 
+        console.log(err)
+
         if(err){ return res.json({ ok: false }) }
 
         const resDB = await db.query('SELECT id, email, nombre, direccion, telefono, enfermedades, enfermedadesFam, contacto, alergias, sangre, edad FROM clientes WHERE id = ?', [id])
+
+        console.log(resDB)
 
         if(resDB.length === 0){ return res.sendStatus(400) }
 
