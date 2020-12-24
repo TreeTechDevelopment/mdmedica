@@ -41,7 +41,7 @@ const createUser = async (req, res) => {
 const verifyUser = async (req, res) => {
     try{
 
-        const { token } = req.headers.authorization.slice(6)
+        const token = req.headers.authorization.slice(6)
 
         console.log(token)
 
