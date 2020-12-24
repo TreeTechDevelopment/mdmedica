@@ -21,8 +21,6 @@ const sendEmailConfirmation = async (user) => {
       subject: "Verificación de Email", 
       html: `<a href="https://mdmedica.herokuapp.com/registro?token=${token}">VERIFICAR CUENTA</a>`, 
     });
-  
-    console.log(info);
 }
 
 const sendEmailForgotPassword = async (user) => {
@@ -35,8 +33,6 @@ const sendEmailForgotPassword = async (user) => {
     subject: "Cambiar Contraseña", 
     html: `<a href="https://mdmedica.herokuapp.com/recuperar?token=${token}">CAMBIAR CONTRASEÑA</a>`, 
   });
-
-  console.log(info);
 }
   
 module.exports ={

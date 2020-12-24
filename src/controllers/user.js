@@ -41,7 +41,7 @@ const createUser = async (req, res) => {
 const verifyUser = async (req, res) => {
     try{
 
-        const { token } = req.body
+        const { token } = req.headers.authorization.slice(6)
 
         if(!token){ return res.sendStatus(400) }
 
@@ -76,8 +76,6 @@ const validUserToken = async (req, res) => {
         if(err){ return res.sendStatus(400) }
 
         let tokenDB = await db.query('SELECT token FROM jwtBlockList WHERE token = ?', [token])
-
-        console.log(tokenDB)
 
         if(tokenDB.length !== 0){ return res.sendStatus(400) }
 
