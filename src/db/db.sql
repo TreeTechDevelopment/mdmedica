@@ -4,12 +4,19 @@ USE mdmedica
 
 CREATE TABLE clientes(
     id INT NOT NULL AUTO_INCREMENT,
-    nombre VARCHAR(40) NOT NULL,
-    apellido VARCHAR(40) NOT NULL,
+    nombre VARCHAR(200) NOT NULL,
     edad INT NOT NULL,
-    sangre VARCHAR(10) NOT NULL,
-    contrasena VARCHAR(40) NOT NULL,
+    sangre VARCHAR(5) NOT NULL,
+    direccion VARCHAR (200) NOT NULL,
+    telefono VARCHAR(12) NOT NULL,
+    contrasena VARCHAR(100) NOT NULL,
     email VARCHAR(40) NOT NULL,
+    enfermedades VARCHAR(500) NOT NULL,
+    enfermedadesFam VARCHAR(500) NOT NULL,
+    contacto VARCHAR(12) NOT NULL,
+    alergias VARCHAR(500) NOT NULL,
+    confirmado BOOL DEFAULT 0,
+    imagen VARCHAR(200) DEFAULT NULL,
     PRIMARY KEY (id)
 )
 
@@ -70,13 +77,27 @@ CREATE TABLE reviews(
 
 CREATE TABLE citas(
     id INT NOT NULL AUTO_INCREMENT,
-    cliente INT NOT NULL,
+    fecha TIMESTAMP NOT NULL,
+    nombre VARCHAR(200) NOT NULL,
+    edad INT NOT NULL,
+    padecimiento VARCHAR(500) NOT NULL,
+    telefono VARCHAR(12) NOT NULL,
+    email VARCHAR(40) NOT NULL,
+    direccion VARCHAR(200) DEFAULT NULL,
+    cliente INT DEFAULT NULL,
+    tipo BOOL DEFAULT 0,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_cliente_cita FOREIGN KEY (cliente) REFERENCES clientes(id)
+)
+
+CREATE TABLE servicioCitas(
+    id INT NOT NULL AUTO_INCREMENT,
     medico INT DEFAULT NULL,
     servicio INT DEFAULT NULL,
-    fecha TIMESTAMP NOT NULL,
+    cita INT NOT NULL,
     PRIMARY KEY (id),
+    CONSTRAINT fk_cita FOREIGN KEY (cita) REFERENCES citas(id),
     CONSTRAINT fk_medico_cita FOREIGN KEY (medico) REFERENCES medicos(id),
-    CONSTRAINT fk_cliente FOREIGN KEY (cliente) REFERENCES clientes(id),
     CONSTRAINT fk_servicio_cita FOREIGN KEY (servicio) REFERENCES servicios(id)
 )
 
@@ -85,6 +106,13 @@ CREATE TABLE textos(
     texto1 VARCHAR(200) DEFAULT NULL,
     texto2 VARCHAR(200) DEFAULT NULL,
     texto3 VARCHAR(200) DEFAULT NULL,
+    PRIMARY KEY (id)
+)
+
+CREATE TABLE jwtBlockList(
+    id INT NOT NULL AUTO_INCREMENT,
+    token TEXT NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 )
 
