@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
                         [name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, passHashed]) 
 
         try{
-            await sendEmailConfirmation({ id: resDB.insertId, email })
+            await sendEmailConfirmation({ id: resDB.insertId, email, name })
         }catch(e){
             console.log(e)
             await db.query('DELETE FROM clientes WHERE id = ?', [resDB.insertId]) 
@@ -125,12 +125,12 @@ const forgotPassword = async (req, res) => {
 
         if(!email){ return res.sendStatus(400) }
 
-        const userDB = await db.query('SELECT email, id FROM clientes WHERE email = ?', [email])
+        const userDB = await db.query('SELECT email, id, nombre FROM clientes WHERE email = ?', [email])
 
         if(userDB.length === 0){ return res.json({ ok: false, message: 'NO EXISTE UNA CUENTA CON ESTE EMAIL.' }) }
 
         try{
-            await sendEmailForgotPassword({ id: userDB[0].id, email })
+            await sendEmailForgotPassword({ id: userDB[0].id, email, name: userDB[0].nombre })
         }catch(e){
             console.log(e)
             return res.sendStatus(500)
@@ -196,7 +196,7 @@ const getUser = async (req, res) => {
 
 const editUser = async (req, res) => {
     try{
-
+        const image = req.file
         const { id } = req.params
         const { token } = req
         const { name, age, phone, address, contact } = req.body
@@ -205,9 +205,13 @@ const editUser = async (req, res) => {
 
         if(!token){ return res.sendStatus(401) }
 
-        let resImage = await uploadToCloudinary(req.file.buffer.toString('base64'), id)
+        if(image){
+            let resImage = await uploadToCloudinary(image.buffer.toString('base64'), id)
 
-        await db.query('UPDATE clientes SET nombre = ?, edad = ?, direccion = ?, telefono = ?, contacto = ?, imagen = ? WHERE id = ?', [name, age, address, phone, contact, resImage.url, id])
+            await db.query('UPDATE clientes SET nombre = ?, edad = ?, direccion = ?, telefono = ?, contacto = ?, imagen = ? WHERE id = ?', [name, age, address, phone, contact, resImage.url, id])
+        }else{
+            await db.query('UPDATE clientes SET nombre = ?, edad = ?, direccion = ?, telefono = ?, contacto = ? WHERE id = ?', [name, age, address, phone, contact, id])
+        }
 
         const userDB = await db.query('SELECT * FROM clientes WHERE id = ?', [id])
 

@@ -13,5 +13,6 @@ router.get('/cita', handleClient)
 router.get('/registro', handleClient)
 router.get('/usuario', handleClient)
 router.get('/recuperar', handleClient)
+router.get('/admin', handleClient)
 
 module.exports = router;

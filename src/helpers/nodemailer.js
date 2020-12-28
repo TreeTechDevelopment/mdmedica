@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+const hbs = require('nodemailer-express-handlebars');
+const path = require('path')
+
 const { createJWTEmailConfirmation } = require('./jwt')
 
 const transporter = nodemailer.createTransport({
@@ -8,18 +11,44 @@ const transporter = nodemailer.createTransport({
     auth: {
       user: process.env.SMTP_USER, 
       pass: process.env.SMTP_PASSWORD, 
+    },
+    tls: {
+        ciphers: 'SSLv3',
+        rejectUnauthorized: false
     }
 });
+
+transporter.use('compile', hbs({
+  viewEngine: {
+    extName: ".handlebars",
+    partialsDir: path.resolve(__dirname, '../templates/'),
+    defaultLayout: false,
+  },
+  viewPath: path.resolve(__dirname, '../templates/')
+}));
 
 const sendEmailConfirmation = async (user) => {
 
     const token = createJWTEmailConfirmation({ id: user.id })
+
+    const context = {
+      title: 'CONFIRMACIÓN DE CORREO',
+      text: 'Da click aquí para confirmar tu correo',
+      name: user.name, 
+      token,
+      path: 'registro'
+    }
   
-    let info = await transporter.sendMail({
-      from: 'contacto@treetechdevelopment.com', 
+    await transporter.sendMail({
+      from: {
+        name: 'MD MÉDICA',
+        address: 'contacto@treetechdevelopment.com'
+      }, 
       to: user.email, 
       subject: "Verificación de Email", 
-      html: `<a href="https://mdmedica.herokuapp.com/registro?token=${token}">VERIFICAR CUENTA</a>`, 
+      subject: "Cambiar Contraseña", 
+      template: 'email',
+      context
     });
 }
 
@@ -27,11 +56,23 @@ const sendEmailForgotPassword = async (user) => {
 
   const token = createJWTEmailConfirmation({ id: user.id })
 
-  let info = await transporter.sendMail({
-    from: 'contacto@treetechdevelopment.com', 
+  const context = {
+    title: 'RECUPERAR CONTRASEÑA',
+    text: 'Da click aquí para cambiar tu contraseña',
+    name: user.name, 
+    token,
+    path: 'recuperar'
+  }
+
+  await transporter.sendMail({
+    from: {
+      name: 'MD MÉDICA',
+      address: 'contacto@treetechdevelopment.com'
+    }, 
     to: user.email, 
     subject: "Cambiar Contraseña", 
-    html: `<a href="https://mdmedica.herokuapp.com/recuperar?token=${token}">CAMBIAR CONTRASEÑA</a>`, 
+    template: 'email',
+    context
   });
 }
   
