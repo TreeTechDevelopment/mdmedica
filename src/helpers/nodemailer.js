@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const hbs = require('nodemailer-express-handlebars');
 const path = require('path')
+const fs = require('fs')
 
 const { createJWTEmailConfirmation } = require('./jwt')
 
@@ -15,6 +16,12 @@ const transporter = nodemailer.createTransport({
     tls: {
         ciphers: 'SSLv3',
         rejectUnauthorized: false
+    },
+    dkim: {
+      domainName: process.env.DKIM_DOMAIN,
+      keySelector: process.env.DKIM_SELECTOR,
+      //privateKey: fs.readFileSync(path.resolve(__dirname, '../certificates/dkim_private.pem'))
+      privateKey: `-----BEGIN RSA PRIVATE KEY-----\n${process.env.DKIM_PRIVATE}\n-----END RSA PRIVATE KEY-----`
     }
 });
 
@@ -41,14 +48,14 @@ const sendEmailConfirmation = async (user) => {
   
     await transporter.sendMail({
       from: {
-        name: 'MD MÉDICA',
+        name: 'MD MEDICA',
         address: 'contacto@treetechdevelopment.com'
       }, 
       to: user.email, 
       subject: "Verificación de Email", 
-      subject: "Cambiar Contraseña", 
       template: 'email',
-      context
+      context,
+      text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
     });
 }
 
@@ -66,13 +73,14 @@ const sendEmailForgotPassword = async (user) => {
 
   await transporter.sendMail({
     from: {
-      name: 'MD MÉDICA',
+      name: 'MD MEDICA',
       address: 'contacto@treetechdevelopment.com'
     }, 
     to: user.email, 
     subject: "Cambiar Contraseña", 
     template: 'email',
-    context
+    context,
+    text: `Hola, ${context.name}. \n Bienvenido a MD Médica \n Para cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
   });
 }
   
