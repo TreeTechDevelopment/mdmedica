@@ -53,12 +53,12 @@ CREATE TABLE medicos(
 
 CREATE TABLE usuarios(
     id INT NOT NULL AUTO_INCREMENT,
-    nombre VARCHAR(40) NOT NULL,
-    apellido VARCHAR(40) NOT NULL,
-    usuario VARCHAR(40) NOT NULL,
-    contraseña VARCHAR(40) NOT NULL,
+    contrasena VARCHAR(100) NOT NULL,
+    email VARCHAR(40) NOT NULL,
     tipo VARCHAR(10) NOT NULL,
-    PRIMARY KEY (id)
+    medico INT DEFAULT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_medico_user FOREIGN KEY (medico) REFERENCES medicos(id)
 )
 
 CREATE TABLE reviews(

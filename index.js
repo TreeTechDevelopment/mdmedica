@@ -9,7 +9,8 @@ const cookieParser = require('cookie-parser')
 
 const app = express()
 
-const routes = require('./src/routes/index')
+const routes = require('./src/routes/index');
+const { setMaxListeners } = require('./src/routes/index');
 
 const PORT = process.env.PORT || 5000
 

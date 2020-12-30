@@ -43,7 +43,6 @@ const sendEmailConfirmation = async (user) => {
       text: 'Da click aquí para confirmar tu correo',
       name: user.name, 
       token,
-      path: 'registro'
     }
   
     await transporter.sendMail({
@@ -53,7 +52,7 @@ const sendEmailConfirmation = async (user) => {
       }, 
       to: user.email, 
       subject: "Verificación de Email", 
-      template: 'email',
+      template: 'confirmation',
       context,
       text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
     });
@@ -68,7 +67,6 @@ const sendEmailForgotPassword = async (user) => {
     text: 'Da click aquí para cambiar tu contraseña',
     name: user.name, 
     token,
-    path: 'recuperar'
   }
 
   await transporter.sendMail({
@@ -78,7 +76,7 @@ const sendEmailForgotPassword = async (user) => {
     }, 
     to: user.email, 
     subject: "Cambiar Contraseña", 
-    template: 'email',
+    template: 'password',
     context,
     text: `Hola, ${context.name}. \n Bienvenido a MD Médica \n Para cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
   });
