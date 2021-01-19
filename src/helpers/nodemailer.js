@@ -54,7 +54,7 @@ const sendEmailConfirmation = async (user) => {
       subject: "Verificación de Email", 
       template: 'confirmation',
       context,
-      text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a http://localhost:3000/registro?token=${context.token}`
+      text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
     });
 }
 
@@ -78,7 +78,7 @@ const sendEmailForgotPassword = async (user) => {
     subject: "Cambiar Contraseña", 
     template: 'password',
     context,
-    text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a http://localhost:3000/recuperar?token=${context.token}`
+    text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
   });
 }
 
