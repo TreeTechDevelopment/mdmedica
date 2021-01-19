@@ -45,17 +45,15 @@
             <td class="title">{{ title }}</td>
         </tr>
     </table>
-     <table width="1200px">
+    <table width="1200px">
         <tr width="100%">
             <td class="text">Hola, {{ name }}</td>
         </tr>
         <tr width="100%">
-            <td class="text">Bienvenido a MD MÉDICA</td>
+            <td class="text">Se ha agendado una cita para el {{ date }}, {{ text }}.</td>
         </tr>
-        <tr width="1200px">
-            <td class="text">
-                <a href="http://localhost:3000/registro?token={{ token }}" style="color: black;">{{ text }}</a>
-            </td>
+        <tr width="100%">
+            <td class="text">Espera el correo de confirmación de la cita.</td>
         </tr>
     </table>
 </body>

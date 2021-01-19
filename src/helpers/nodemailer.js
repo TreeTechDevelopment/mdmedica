@@ -54,7 +54,7 @@ const sendEmailConfirmation = async (user) => {
       subject: "Verificación de Email", 
       template: 'confirmation',
       context,
-      text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
+      text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a http://localhost:3000/registro?token=${context.token}`
     });
 }
 
@@ -78,11 +78,56 @@ const sendEmailForgotPassword = async (user) => {
     subject: "Cambiar Contraseña", 
     template: 'password',
     context,
-    text: `Hola, ${context.name}. \n Bienvenido a MD Médica \n Para cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
+    text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a http://localhost:3000/recuperar?token=${context.token}`
+  });
+}
+
+const sendEmailDate = async (data) => {
+
+  const context = {
+    title: 'AGENDAR CITA',
+    name: data.name,
+    date: data.date,
+    text: data.text
+  }
+
+  await transporter.sendMail({
+    from: {
+      name: 'MD MEDICA',
+      address: 'contacto@treetechdevelopment.com'
+    }, 
+    to: data.email, 
+    subject: "Cita", 
+    template: 'date',
+    context,
+    text: `Hola, ${context.name}. \nSe ha agendado una cita para el ${ context.date }, ${ context.text }. \nEspera el correo de confirmación de la cita.`
+  });
+}
+
+const sendEmailStatusDate = async (data) => {
+
+  const context = {
+    title: 'CITA',
+    name: data.name,
+    text: data.text
+  }
+
+  await transporter.sendMail({
+    from: {
+      name: 'MD MEDICA',
+      address: 'contacto@treetechdevelopment.com'
+    }, 
+    to: data.email, 
+    subject: "Cita", 
+    template: 'dateConfirmation',
+    context,
+    text: `Hola, ${context.name}. \n${context.text}`
   });
 }
   
 module.exports ={
   sendEmailConfirmation,
-  sendEmailForgotPassword
+  sendEmailForgotPassword,
+  sendEmailDate,
+  sendEmailStatusDate
 }

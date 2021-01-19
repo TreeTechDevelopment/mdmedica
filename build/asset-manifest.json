@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/static/js/main.b97f0ce2.chunk.js",
-    "main.js.map": "/static/js/main.b97f0ce2.chunk.js.map",
+    "main.js": "/static/js/main.9bc06fb3.chunk.js",
+    "main.js.map": "/static/js/main.9bc06fb3.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.92ee656d.js",
     "runtime-main.js.map": "/static/js/runtime-main.92ee656d.js.map",
     "static/css/2.07708f5f.chunk.css": "/static/css/2.07708f5f.chunk.css",
-    "static/js/2.4082c051.chunk.js": "/static/js/2.4082c051.chunk.js",
-    "static/js/2.4082c051.chunk.js.map": "/static/js/2.4082c051.chunk.js.map",
+    "static/js/2.9bc85146.chunk.js": "/static/js/2.9bc85146.chunk.js",
+    "static/js/2.9bc85146.chunk.js.map": "/static/js/2.9bc85146.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.ed0c230110e5be71eedd10da47b23576.js": "/precache-manifest.ed0c230110e5be71eedd10da47b23576.js",
+    "precache-manifest.943a0abbbaa0ad25cf674b3097fa3d0c.js": "/precache-manifest.943a0abbbaa0ad25cf674b3097fa3d0c.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.07708f5f.chunk.css.map": "/static/css/2.07708f5f.chunk.css.map",
-    "static/js/2.4082c051.chunk.js.LICENSE.txt": "/static/js/2.4082c051.chunk.js.LICENSE.txt",
+    "static/js/2.9bc85146.chunk.js.LICENSE.txt": "/static/js/2.9bc85146.chunk.js.LICENSE.txt",
     "static/media/Montserrat-Bold.ttf": "/static/media/Montserrat-Bold.ade91f47.ttf",
     "static/media/Montserrat-Italic.ttf": "/static/media/Montserrat-Italic.a7063e0c.ttf",
     "static/media/Montserrat-Light.ttf": "/static/media/Montserrat-Light.409c7f79.ttf",
@@ -19,7 +19,11 @@
     "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.ee653992.ttf",
     "static/media/background_home.jpg": "/static/media/background_home.1de41e0c.jpg",
     "static/media/candado.b10b6219.svg": "/static/media/candado.b10b6219.svg",
+    "static/media/cerrar-sesion.77c28ab8.svg": "/static/media/cerrar-sesion.77c28ab8.svg",
+    "static/media/cita-medica.9799ac63.svg": "/static/media/cita-medica.9799ac63.svg",
     "static/media/coagulacion.f77ef148.svg": "/static/media/coagulacion.f77ef148.svg",
+    "static/media/decide.e4d268a1.svg": "/static/media/decide.e4d268a1.svg",
+    "static/media/editar.2927f8de.svg": "/static/media/editar.2927f8de.svg",
     "static/media/hematologia.2fdb339c.svg": "/static/media/hematologia.2fdb339c.svg",
     "static/media/img1.jpg": "/static/media/img1.c62b467c.jpg",
     "static/media/img2.jpg": "/static/media/img2.18e3b899.jpg",
@@ -31,6 +35,7 @@
     "static/media/logo-blue.42d457b3.svg": "/static/media/logo-blue.42d457b3.svg",
     "static/media/logo-white.d600048c.svg": "/static/media/logo-white.d600048c.svg",
     "static/media/logo1.f71ef8d8.svg": "/static/media/logo1.f71ef8d8.svg",
+    "static/media/medico.d18fe2aa.svg": "/static/media/medico.d18fe2aa.svg",
     "static/media/medicos.2e2d6029.svg": "/static/media/medicos.2e2d6029.svg",
     "static/media/phone.f4c2f1cc.svg": "/static/media/phone.f4c2f1cc.svg",
     "static/media/porcentaje.447a5667.svg": "/static/media/porcentaje.447a5667.svg",
@@ -43,7 +48,7 @@
   "entrypoints": [
     "static/js/runtime-main.92ee656d.js",
     "static/css/2.07708f5f.chunk.css",
-    "static/js/2.4082c051.chunk.js",
-    "static/js/main.b97f0ce2.chunk.js"
+    "static/js/2.9bc85146.chunk.js",
+    "static/js/main.9bc06fb3.chunk.js"
   ]
 }

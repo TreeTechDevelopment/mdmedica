@@ -1,5 +1,7 @@
 const db = require('../db/db')
 
+const { validToken } = require('../helpers/jwt')
+
 const getAllMedicos = async (req, res) => {
     try{
         let doctors = await db.query('SELECT * FROM medicos')
@@ -26,7 +28,7 @@ const getMedico = async (req, res) => {
         let response = { info: doctor[0] }
 
         if(getReviews === "true"){
-            let reviews = await db.query('SELECT texto, nombre, apellido, estrellas, reviews.id FROM reviews INNER JOIN clientes ON reviews.medico = ? WHERE aprobado = 1', [id])
+            let reviews = await db.query('SELECT texto, nombre, estrellas, reviews.id FROM reviews INNER JOIN clientes ON reviews.cliente = clientes.id WHERE reviews.medico = ? AND aprobado = 1', [id])
             response.reviews = reviews
         }
         

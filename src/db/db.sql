@@ -57,8 +57,10 @@ CREATE TABLE usuarios(
     email VARCHAR(40) NOT NULL,
     tipo VARCHAR(10) NOT NULL,
     medico INT DEFAULT NULL,
+    laboratorio INT DEFAULT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_medico_user FOREIGN KEY (medico) REFERENCES medicos(id)
+    CONSTRAINT fk_laboratorio_user FOREIGN KEY (laboratorio) REFERENCES laboratorios(id)
 )
 
 CREATE TABLE reviews(
@@ -95,6 +97,7 @@ CREATE TABLE servicioCitas(
     medico INT DEFAULT NULL,
     servicio INT DEFAULT NULL,
     cita INT NOT NULL,
+    aprobado BOOL DEFAULT 0,
     PRIMARY KEY (id),
     CONSTRAINT fk_cita FOREIGN KEY (cita) REFERENCES citas(id),
     CONSTRAINT fk_medico_cita FOREIGN KEY (medico) REFERENCES medicos(id),
@@ -107,6 +110,14 @@ CREATE TABLE textos(
     texto2 VARCHAR(200) DEFAULT NULL,
     texto3 VARCHAR(200) DEFAULT NULL,
     PRIMARY KEY (id)
+)
+
+CREATE TABLE recetas(
+    id INT NOT NULL AUTO_INCREMENT,
+    receta VARCHAR(500) NOT NULL,
+    cita INT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_cita_receta FOREIGN KEY (cita) REFERENCES servicioCitas(id)
 )
 
 CREATE TABLE jwtBlockList(

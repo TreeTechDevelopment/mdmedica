@@ -31,6 +31,10 @@ const login = async (req, res) => {
 
         if(!email && !password){ return res.sendStatus(400) }
 
+        /* await db.query('INSERT INTO usuarios (email, contrasena, medico, tipo) VALUES (?, ?, ?, ?)', [email, hashPassword(password), 4, 'ASISTENTE'])
+
+        return res.json({ userType: 'ASISTENTE' }) */
+
         const userDB = await db.query('SELECT * FROM usuarios WHERE email = ?', [email])
         
         if(userDB.length === 0){ return res.sendStatus(400) }
