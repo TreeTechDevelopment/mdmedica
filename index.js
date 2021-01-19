@@ -19,6 +19,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(routes)
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`SERVER ON PORT ${PORT}`) 
 })
