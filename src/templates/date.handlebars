@@ -19,7 +19,10 @@
             font-size: 2.3vw;
             text-align: center;
             vertical-align: middle;
-            width: 95%;
+            width: 100%;
+        }
+
+        .title-bg{
             background-image: url('https://res.cloudinary.com/treetech/image/upload/v1609126987/mdmedica/email-title_oubbwm.jpg');
             background-size: contain;
             background-repeat: no-repeat;
@@ -28,24 +31,48 @@
         .text{
             padding-left: 5%;
             font-family: Montserrat, Arial, Helvetica, sans-serif;
-            font-size: 1.5vw;
+            font-size: 1.2vw;
+        }
+
+        .btn-container{
+            width: 100%;
+            text-align: center;
+            vertical-align: middle;
+            margin-bottom: 1vw;
+            height: 2vw;
+        }
+
+        .btn{
+            background-color: rgb(0,47,91);
+            padding: 0.5vw 1vw;
+            border-radius:  0.3rem;
+            color: white !important;
+            text-decoration: none !important;
+            font-family: Montserrat, Arial, Helvetica, sans-serif;
+            font-size: 1.2vw;
         }
     </style>
 </head>
 <body>
-    <table width="1200px" height="200px" role="presentation">
+    <table width="100%" height="200px" role="presentation">
         <tr>
             <th>
                 <div class="header"></div>
             </th>
         </tr>
     </table>
-    <table width="1200px" height="200px" role="presentation">
+    <table width="100%" height="200px" role="presentation">
         <tr width="100%">
-            <td class="title">{{ title }}</td>
+            <td class="title-bg">
+                <table width="83%" height="200px" role="presentation">
+                    <tr width="100%">
+                        <td class="title">{{ title }}</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
-    <table width="1200px">
+    <table width="83%">
         <tr width="100%">
             <td class="text">Hola, {{ name }}</td>
         </tr>
@@ -54,6 +81,11 @@
         </tr>
         <tr width="100%">
             <td class="text">Espera el correo de confirmación de la cita.</td>
+        </tr>
+        <tr width="100%">
+            <td class="btn-container">
+                <a href="https://mdmedica.herokuapp.com/cita/pago?token={{ token }}" class="btn">PAGAR</a>
+            </td>
         </tr>
     </table>
 </body>

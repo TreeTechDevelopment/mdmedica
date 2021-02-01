@@ -10,6 +10,18 @@ const uploadToCloudinary = (image, userID) => {
     });
 }
 
+const removeCloudinary = (image, userID) => {
+    return new Promise((resolve, reject) => {
+        let nameFile = `mdmedica/${image.split('/')[image.split('/').length - 1]}`
+        let public_id = `${nameFile.split('.')[0]}`
+        cloudinary.uploader.destroy(public_id, (err, result) => {
+            if (err || result.result === "not found") return reject(err);
+            return resolve();
+        })
+    });
+}
+
 module.exports = {
-    uploadToCloudinary
+    uploadToCloudinary,
+    removeCloudinary
 }

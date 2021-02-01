@@ -19,6 +19,7 @@ const getMedico = async (req, res) => {
         if(JSON.stringify(req.query) === "{}" && !req.query.reviews){ return res.sendStatus(400) }
 
         const getReviews = req.query.reviews
+        const getSchedule = req.query.schedule
         const { id } = req.params
         if(!id){ return res.sendStatus(400) }
 
@@ -31,6 +32,15 @@ const getMedico = async (req, res) => {
             let reviews = await db.query('SELECT texto, nombre, estrellas, reviews.id FROM reviews INNER JOIN clientes ON reviews.cliente = clientes.id WHERE reviews.medico = ? AND aprobado = 1', [id])
             response.reviews = reviews
         }
+        if(getSchedule === "true"){
+            response.monday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 1', [id])
+            response.tuesday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 2', [id])
+            response.wednesday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 3', [id])
+            response.thursday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 4', [id])
+            response.friday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 5', [id])
+            response.saturday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 6', [id])
+            response.sunday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 0', [id])
+        }
         
         res.json(response)
             
@@ -42,12 +52,24 @@ const getMedico = async (req, res) => {
 
 const postReview = async (req, res) => {
     try{
+        const { token } = req
         const { id } = req.params
         const review = req.body
 
-        if(!id && !review.review && review.review === "" && !review.stars && !review.user){ return res.sendStatus(400) }
+        const { err, id: user } = await validToken(token)
 
-        await db.query('INSERT INTO reviews (texto, medico, cliente, estrellas) VALUES (?,?,?,?)', [review.review, id, review.user, review.stars])
+        console.log(id)
+        console.log(review)
+
+        if(err){ return res.sendStatus(401) }
+
+        if(isNaN(Number(id)) || !review.stars){ return res.sendStatus(400) }
+
+        const userDB = await db.query('SELECT id FROM clientes WHERE id = ?', [user])
+
+        if(userDB.length === 0){ return res.sendStatus(400) }
+
+        await db.query('INSERT INTO reviews (texto, medico, cliente, estrellas) VALUES (?,?,?,?)', [review.review, id, user, review.stars])
 
         res.sendStatus(200)
             

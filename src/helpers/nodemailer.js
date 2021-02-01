@@ -82,13 +82,16 @@ const sendEmailForgotPassword = async (user) => {
   });
 }
 
-const sendEmailDate = async (data) => {
+const sendEmailDate = async (data, exp) => {
+
+  const token = createJWTEmailConfirmation({ cita: data.dateID, tipo: data.type }, exp)
 
   const context = {
     title: 'AGENDAR CITA',
     name: data.name,
     date: data.date,
-    text: data.text
+    text: data.text,
+    token
   }
 
   await transporter.sendMail({
@@ -124,10 +127,33 @@ const sendEmailStatusDate = async (data) => {
     text: `Hola, ${context.name}. \n${context.text}`
   });
 }
+
+const sendEmailNewUser = async (data) => {
+
+  const token = createJWTEmailConfirmation({ id: data.id, email: data.email })
+
+  const context = {
+    title: 'USUARIO',
+    token
+  }
+
+  await transporter.sendMail({
+    from: {
+      name: 'MD MEDICA',
+      address: 'contacto@treetechdevelopment.com'
+    }, 
+    to: data.email, 
+    subject: "Confirmación", 
+    template: 'user',
+    context,
+    text: `Bienvenido a MD MÉDICA. \nPara ingresar a tu cuenta debes crear una contraseña accediendo al siguiente enlace. \nhttps://mdmedica.herokuapp.com/admin/password?token=${token}`
+  });
+}
   
 module.exports ={
   sendEmailConfirmation,
   sendEmailForgotPassword,
   sendEmailDate,
-  sendEmailStatusDate
+  sendEmailStatusDate,
+  sendEmailNewUser
 }

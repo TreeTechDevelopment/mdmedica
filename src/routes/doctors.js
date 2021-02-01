@@ -8,6 +8,6 @@ const { cookiesAuthMiddleware } = require('../helpers/auth')
 router.get('/all-medicos', getAllMedicos)
 router.get('/medico/:id', getMedico)
 
-router.post('/medico/:id', postReview)
+router.post('/medico/:id', cookiesAuthMiddleware, postReview)
 
 module.exports = router;

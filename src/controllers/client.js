@@ -15,9 +15,9 @@ const handleClient = (req, res) => {
 const createUser = async (req, res) => {
     try{
 
-        const { name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, password } = req.body
+        const { name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, password, rh } = req.body
 
-        if(!name || !age || !address || !phone || !email ||  !illness ||  !relativeIllness || !emergencyContact || !allergies || !bloodType || !password){
+        if(!name || !age || !address || !phone || !email ||  !illness ||  !relativeIllness || !emergencyContact || !allergies || !bloodType || !password || !rh){
             return res.sendStatus(400)
         }
 
@@ -27,12 +27,13 @@ const createUser = async (req, res) => {
 
         const passHashed = hashPassword(password)
 
-        const resDB = await db.query('INSERT INTO clientes (nombre, edad, direccion, telefono, email, enfermedades, enfermedadesFam, contacto, alergias, sangre, contrasena) VALUES (?,?,?,?,?,?,?,?,?,?,?)', 
-                        [name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, passHashed]) 
+        const resDB = await db.query('INSERT INTO clientes (nombre, edad, direccion, telefono, email, enfermedades, enfermedadesFam, contacto, alergias, sangre, contrasena, rh) VALUES (?,?,?,?,?,?,?,?,?,?,?)', 
+                        [name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, passHashed, rh]) 
 
         try{
             await sendEmailConfirmation({ id: resDB.insertId, email, name })
         }catch(e){
+            console.log(e)
             await db.query('DELETE FROM clientes WHERE id = ?', [resDB.insertId]) 
             return res.sendStatus(500)
         }
@@ -192,13 +193,14 @@ const getUser = async (req, res) => {
 const editUser = async (req, res) => {
     try{
         const image = req.file
-        const { id } = req.params
         const { token } = req
         const { name, age, phone, address, contact } = req.body
 
         if(!name || !age || !phone || !address || !contact || name === "" || age === "" || phone === "" || address === "" || contact === ""){ return res.sendStatus(400) }
 
-        if(!token){ return res.sendStatus(401) }
+        const { err, id } = await validToken(token)
+
+        if(!token || err){ return res.sendStatus(401) }
 
         if(image){
             let resImage = await uploadToCloudinary(image.buffer.toString('base64'), id)
@@ -208,14 +210,7 @@ const editUser = async (req, res) => {
             await db.query('UPDATE clientes SET nombre = ?, edad = ?, direccion = ?, telefono = ?, contacto = ? WHERE id = ?', [name, age, address, phone, contact, id])
         }
 
-        const userDB = await db.query('SELECT * FROM clientes WHERE id = ?', [id])
-
-        delete userDB[0].contrasena
-
-        const newToken = createJWT(JSON.parse(JSON.stringify(userDB[0])))
-
-        res.cookie('payload', newToken.split('.')[0] + '.' + newToken.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
-        .cookie('signature', newToken.split('.')[2], { sameSite: true, httpOnly: true })
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .sendStatus(200)
 
     }catch(e){
@@ -241,11 +236,14 @@ const getInfo = async (req, res) => {
     try{
         if(JSON.stringify(req.query) === "{}"){ return res.sendStatus(400) }
 
-        const { disccountInfo } = req.query
+        const { disccountInfo, images } = req.query
 
         if(disccountInfo === "true"){
             let text = await db.query('SELECT * FROM textos WHERE id = 1')
             return res.json({ ...text[0] })
+        }else if(images === "true"){
+            let images = await db.query('SELECT * FROM imagenes')
+            return res.json({ images })
         }
 
         return res.sendStatus(400)
