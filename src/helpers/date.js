@@ -49,9 +49,9 @@ const checkDateNoDuplicate = async (date, doctor, labs) => {
     return okDate
 }
 
-const getQuery = (date, age, name, illness, phone, email, type, address, clientID, homeService) => {
+const getQuery = (date, age, name, illness, phone, email, type, address, clientID, homeService, sex) => {
     let query = [{ row: 'fecha', value: new Date(date).toLocaleString() },{ row: 'edad', value: age },{ row: 'nombre', value: name },{ row: 'padecimiento', value: illness },
-    { row: 'telefono', value: phone },{ row: 'email', value: email },{ row: 'tipo', value: type === "medico" ? false : true }]
+    { row: 'telefono', value: phone },{ row: 'email', value: email },{ row: 'tipo', value: type === "medico" ? false : true }, { row: 'sexo', value: sex }]
 
     if(homeService === true){ query.push({ row: 'direccion', value: address }) }
     if(clientID){ query.push({ row: 'cliente', value: clientID }) }
@@ -66,12 +66,20 @@ const checkDateTime = (date) => {
     if((newDate - actualDate) / (1000 * 60 * 60) < 24 ){ return false }
 
     return true
-
 }
 
+const getParams = async (dates) => {
+    let newParams = []
+    for(let i = 0; i < dates.length; i++){
+        const params = await db.query('SELECT parametros.id, tipo, unidades, minRef, maxRef, nombre, servicio FROM parametros INNER JOIN referencias ON parametros.id = referencias.param WHERE parametros.servicio = ? AND referencias.sexo = ? AND referencias.minEdad <= ? AND referencias.maxEdad >= ?', [dates[i].servId, dates[i].sexo, dates[i].edad, dates[i].edad])
+        newParams.push({params, service: params[0].servicio})
+    }
+    return newParams
+}
 module.exports= {
     checkDateHour,
     checkDateNoDuplicate,
     getQuery,
-    checkDateTime
+    checkDateTime,
+    getParams
 }

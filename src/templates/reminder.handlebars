@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .header{
+            background-image: url('https://res.cloudinary.com/treetech/image/upload/c_crop,h_65,w_420,x_405,y_40/v1609126987/mdmedica/email-header_ezpimg.jpg');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: auto;
+            height: 133px;
+        }
+
+        .header-container{
+            height: 5vmax;
+        }
+
+        .title {
+            background-color: rgb(178,223,252);
+            height: 10vmax;
+        }
+
+        p{
+            font-family: Montserrat, Arial, Helvetica, sans-serif;
+            color: rgb(0,47,91);
+            font-size: 2vw;
+            text-align: center;
+            font-weight: bold;
+            width: fit-content;
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 0 2vmax;
+            margin: 0 auto;
+        }
+
+        .text{
+            padding-left: 5%;
+            font-family: Montserrat, Arial, Helvetica, sans-serif;
+            font-size: 1rem;
+        }
+
+        .content{ margin-top: 1rem; }
+
+        @media (max-width: 600px) {
+            .header{ background-size: contain; }
+            .title{ height: 12vmax }
+            p{ 
+                font-size: 1.2rem; 
+                padding: 0.3rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+   <table width="100%" role="presentation" class="header-container">
+        <tr>
+            <th>
+                <div class="header"></div>
+            </th>
+        </tr>
+    </table>
+    <table width="100%" role="presentation" class="title">
+        <tr width="100%">
+            <td>
+                <p>{{ title }}</p>
+            </td>
+        </tr>
+    </table>
+    <table width="100%" class="content">
+        <tr width="100%">
+            <td class="text">Hola, {{ name }}</td>
+        </tr>
+        <tr width="100%">
+            <td class="text">Recuerda que tienes una cita {{ text }}, para el {{ date }}.</td>
+        </tr>
+    </table>
+</body>
+</html>

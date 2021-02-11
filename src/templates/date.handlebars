@@ -6,33 +6,41 @@
     <title>Document</title>
     <style>
         .header{
-            background-image: url('https://res.cloudinary.com/treetech/image/upload/v1609126987/mdmedica/email-header_ezpimg.jpg');
-            background-size: contain;
-            width: 100%;
-            height: 138px;
+            background-image: url('https://res.cloudinary.com/treetech/image/upload/c_crop,h_65,w_420,x_405,y_40/v1609126987/mdmedica/email-header_ezpimg.jpg');
             background-repeat: no-repeat;
+            background-position: center center;
+            background-size: auto;
+            height: 133px;
+        }
+
+        .header-container{
+            height: 5vmax;
         }
 
         .title {
-            font-family: Montserrat, 'Arial Black', Arial, Helvetica, sans-serif;
-            color: rgb(0,47,91);
-            font-size: 2.3vw;
-            text-align: center;
-            vertical-align: middle;
-            width: 100%;
+            background-color: rgb(178,223,252);
+            height: 10vmax;
         }
 
-        .title-bg{
-            background-image: url('https://res.cloudinary.com/treetech/image/upload/v1609126987/mdmedica/email-title_oubbwm.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
+        p{
+            font-family: Montserrat, Arial, Helvetica, sans-serif;
+            color: rgb(0,47,91);
+            font-size: 2vw;
+            text-align: center;
+            font-weight: bold;
+            width: fit-content;
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 0 2vmax;
+            margin: 0 auto;
         }
 
         .text{
             padding-left: 5%;
             font-family: Montserrat, Arial, Helvetica, sans-serif;
-            font-size: 1.2vw;
+            font-size: 1rem;
         }
+
+        .content{ margin-top: 1rem; }
 
         .btn-container{
             width: 100%;
@@ -49,30 +57,37 @@
             color: white !important;
             text-decoration: none !important;
             font-family: Montserrat, Arial, Helvetica, sans-serif;
-            font-size: 1.2vw;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .header{ background-size: contain; }
+            .title{ height: 12vmax }
+            p{ 
+                font-size: 1.2rem; 
+                padding: 0.3rem 1rem;
+            }
+            .table-btn{ height: 4rem; }
+            .btn{ padding: 0.5rem 1rem; } 
         }
     </style>
 </head>
 <body>
-    <table width="100%" height="200px" role="presentation">
+   <table width="100%" role="presentation" class="header-container">
         <tr>
             <th>
                 <div class="header"></div>
             </th>
         </tr>
     </table>
-    <table width="100%" height="200px" role="presentation">
+    <table width="100%" role="presentation" class="title">
         <tr width="100%">
-            <td class="title-bg">
-                <table width="83%" height="200px" role="presentation">
-                    <tr width="100%">
-                        <td class="title">{{ title }}</td>
-                    </tr>
-                </table>
+            <td>
+                <p>{{ title }}</p>
             </td>
         </tr>
     </table>
-    <table width="83%">
+    <table width="100%" class="content">
         <tr width="100%">
             <td class="text">Hola, {{ name }}</td>
         </tr>
@@ -82,6 +97,8 @@
         <tr width="100%">
             <td class="text">Espera el correo de confirmación de la cita.</td>
         </tr>
+    </table>
+    <table width="100%" class="table-btn" role="presentation">
         <tr width="100%">
             <td class="btn-container">
                 <a href="https://mdmedica.herokuapp.com/cita/pago?token={{ token }}" class="btn">PAGAR</a>

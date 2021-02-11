@@ -331,8 +331,6 @@ const deleteUser = async (req, res) => {
 
         const user = await db.query('SELECT medico FROM usuarios WHERE id = ?', [id])
 
-        console.log(user)
-
         await db.query('DELETE FROM usuarios WHERE id = ?', [Number(id)])
         await db.query('DELETE FROM medicos WHERE id = ?', [user[0].medico])
 
@@ -399,7 +397,7 @@ const createPassword = async (req, res) => {
 
         const { err, id, email } = await validTokenEmail(token)
 
-        if(err || !id || !email){ return res.sendStatus(400) }
+        if(err || !id || !email){ return res.sendStatus(401) }
 
         const passHashed = hashPassword(password)
 
@@ -412,6 +410,64 @@ const createPassword = async (req, res) => {
         res.sendStatus(500)
     }
 }
+
+const getClient = async (req, res) => {
+    try{
+        const { id } = req.query
+        const { token } = req
+
+        if(isNaN(Number(id))){ return res.sendStatus(400) }
+
+        const { err, tipo } = await validToken(token)
+
+        if(err || !tipo){ return res.sendStatus(401) }
+
+        const user =  await db.query('SELECT * FROM clientes WHERE id = ?', [id])
+
+        const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'EP'])
+        const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'PF'])
+        const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'H'])
+
+        if(EP.length !== 0){ user[0].enfermedades = EP }
+        if(PF.length !== 0){ user[0].enfermedadesFam = PF }
+        if(H.length !== 0){ user[0].habitos = H }
+
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
+        .json({ user: user[0] })
+
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500)
+    }
+}
+
+const getClientResults = async (req, res) => {
+    try{
+        const { id, serv_id } = req.query
+        const { token } = req
+
+        if(isNaN(Number(id)) || isNaN(Number(serv_id))){ return res.sendStatus(400) }
+
+        const { err, tipo } = await validToken(token)
+
+        if(err || !tipo){ return res.sendStatus(401) }
+
+        const params = await db.query('SELECT id, nombre, unidades FROM parametros WHERE servicio = ?', [Number(serv_id)])
+        let results = []
+        for(let i = 0; i < params.length; i++){
+            const resDB = await db.query('SELECT * FROM resultados WHERE cliente = ? AND param = ? ORDER BY fecha ASC', [Number(id), params[i].id])
+            results.push({ results: resDB, param: params[i].id })
+        }
+
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
+        .json({ params, results })
+
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500)
+    }
+}
+
 
 module.exports = {
     login,
@@ -428,5 +484,7 @@ module.exports = {
     getUser,
     deleteUser,
     createUser,
-    createPassword
+    createPassword,
+    getClient,
+    getClientResults
 }

@@ -35,119 +35,216 @@ transporter.use('compile', hbs({
 }));
 
 const sendEmailConfirmation = async (user) => {
+    let sent = false
+    let tries = 0
+    do{
+        try{
+          const token = createJWTEmailConfirmation({ id: user.id })
 
-    const token = createJWTEmailConfirmation({ id: user.id })
+          const context = {
+            title: 'CONFIRMACIÓN DE CORREO',
+            text: 'Da click en el siguiente botón para confirmar tu correo',
+            name: user.name, 
+            token,
+          }
+        
+          await transporter.sendMail({
+            from: {
+              name: 'MD MEDICA',
+              address: 'contacto@treetechdevelopment.com'
+            }, 
+            to: user.email, 
+            subject: "Verificación de Email", 
+            template: 'confirmation',
+            context,
+            text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
+          });
+          sent = true
+        }catch(e){
+            console.log(e)
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            tries++
+        }
+    }while(!sent && tries < 3)
 
-    const context = {
-      title: 'CONFIRMACIÓN DE CORREO',
-      text: 'Da click aquí para confirmar tu correo',
-      name: user.name, 
-      token,
-    }
-  
-    await transporter.sendMail({
-      from: {
-        name: 'MD MEDICA',
-        address: 'contacto@treetechdevelopment.com'
-      }, 
-      to: user.email, 
-      subject: "Verificación de Email", 
-      template: 'confirmation',
-      context,
-      text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
-    });
+    
 }
 
 const sendEmailForgotPassword = async (user) => {
 
-  const token = createJWTEmailConfirmation({ id: user.id })
+  let sent = false
+    let tries = 0
+    do{
+        try{
+            const token = createJWTEmailConfirmation({ id: user.id })
 
-  const context = {
-    title: 'RECUPERAR CONTRASEÑA',
-    text: 'Da click aquí para cambiar tu contraseña',
-    name: user.name, 
-    token,
-  }
-
-  await transporter.sendMail({
-    from: {
-      name: 'MD MEDICA',
-      address: 'contacto@treetechdevelopment.com'
-    }, 
-    to: user.email, 
-    subject: "Cambiar Contraseña", 
-    template: 'password',
-    context,
-    text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
-  });
+            const context = {
+              title: 'RECUPERAR CONTRASEÑA',
+              text: 'Da click en sl siguiente botón para cambiar tu contraseña',
+              name: user.name, 
+              token,
+            }
+          
+            await transporter.sendMail({
+              from: {
+                name: 'MD MEDICA',
+                address: 'contacto@treetechdevelopment.com'
+              }, 
+              to: user.email, 
+              subject: "Cambiar Contraseña", 
+              template: 'password',
+              context,
+              text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
+            });
+            sent = true
+        }catch(e){
+            console.log(e)
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            tries++
+        }
+    }while(!sent && tries < 3)
 }
 
 const sendEmailDate = async (data, exp) => {
 
-  const token = createJWTEmailConfirmation({ cita: data.dateID, tipo: data.type }, exp)
+  let sent = false
+  let tries = 0
+  do{
+      try{
+          const token = createJWTEmailConfirmation({ cita: data.dateID, tipo: data.type }, exp)
 
-  const context = {
-    title: 'AGENDAR CITA',
-    name: data.name,
-    date: data.date,
-    text: data.text,
-    token
-  }
+          const context = {
+            title: 'AGENDAR CITA',
+            name: data.name,
+            date: data.date,
+            text: data.text,
+            token
+          }
+        
+          await transporter.sendMail({
+            from: {
+              name: 'MD MEDICA',
+              address: 'contacto@treetechdevelopment.com'
+            }, 
+            to: data.email, 
+            subject: "Cita", 
+            template: 'date',
+            context,
+            text: `Hola, ${context.name}. \nSe ha agendado una cita para el ${ context.date }, ${ context.text }. \nEspera el correo de confirmación de la cita.`
+          });
+          sent = true
+      }catch(e){
+          console.log(e)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          tries++
+      }
+  }while(!sent && tries < 3)
 
-  await transporter.sendMail({
-    from: {
-      name: 'MD MEDICA',
-      address: 'contacto@treetechdevelopment.com'
-    }, 
-    to: data.email, 
-    subject: "Cita", 
-    template: 'date',
-    context,
-    text: `Hola, ${context.name}. \nSe ha agendado una cita para el ${ context.date }, ${ context.text }. \nEspera el correo de confirmación de la cita.`
-  });
+  
 }
 
 const sendEmailStatusDate = async (data) => {
 
-  const context = {
-    title: 'CITA',
-    name: data.name,
-    text: data.text
-  }
+  let sent = false
+  let tries = 0
+  do{
+      try{
+          const context = {
+            title: 'CITA',
+            name: data.name,
+            text: data.text
+          }
+        
+          await transporter.sendMail({
+            from: {
+              name: 'MD MEDICA',
+              address: 'contacto@treetechdevelopment.com'
+            }, 
+            to: data.email, 
+            subject: "Cita", 
+            template: 'dateConfirmation',
+            context,
+            text: `Hola, ${context.name}. \n${context.text}`
+          });
+          sent = true
+      }catch(e){
+          console.log(e)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          tries++
+      }
+  }while(!sent && tries < 3)
 
-  await transporter.sendMail({
-    from: {
-      name: 'MD MEDICA',
-      address: 'contacto@treetechdevelopment.com'
-    }, 
-    to: data.email, 
-    subject: "Cita", 
-    template: 'dateConfirmation',
-    context,
-    text: `Hola, ${context.name}. \n${context.text}`
-  });
+  
 }
 
 const sendEmailNewUser = async (data) => {
 
-  const token = createJWTEmailConfirmation({ id: data.id, email: data.email })
+  let sent = false
+  let tries = 0
+  do{
+      try{
+          const token = createJWTEmailConfirmation({ id: data.id, email: data.email })
 
-  const context = {
-    title: 'USUARIO',
-    token
-  }
+          const context = {
+            title: 'USUARIO',
+            token
+          }
+        
+          await transporter.sendMail({
+            from: {
+              name: 'MD MEDICA',
+              address: 'contacto@treetechdevelopment.com'
+            }, 
+            to: data.email, 
+            subject: "Confirmación", 
+            template: 'user',
+            context,
+            text: `Bienvenido a MD MÉDICA. \nPara ingresar a tu cuenta debes crear una contraseña accediendo al siguiente enlace. \nhttps://mdmedica.herokuapp.com/admin/password?token=${token}`
+          });
+          sent = true
+      }catch(e){
+          console.log(e)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          tries++
+      }
+  }while(!sent && tries < 3)
 
-  await transporter.sendMail({
-    from: {
-      name: 'MD MEDICA',
-      address: 'contacto@treetechdevelopment.com'
-    }, 
-    to: data.email, 
-    subject: "Confirmación", 
-    template: 'user',
-    context,
-    text: `Bienvenido a MD MÉDICA. \nPara ingresar a tu cuenta debes crear una contraseña accediendo al siguiente enlace. \nhttps://mdmedica.herokuapp.com/admin/password?token=${token}`
-  });
+  
+}
+
+const sendEmailReminder = async (data) => {
+
+  let sent = false
+  let tries = 0
+  do{
+      try{
+          const context = {
+            title: 'RECORDATORIO',
+            name: data.name,
+            date: data.date,
+            text: data.text
+          }
+        
+          await transporter.sendMail({
+            from: {
+              name: 'MD MEDICA',
+              address: 'contacto@treetechdevelopment.com'
+            }, 
+            to: data.email, 
+            subject: "Recordatorio", 
+            template: 'reminder',
+            context,
+            text: `Hola, ${ context.name } \nRecuerda que tienes una cita ${ text }, para el ${ date }.`
+          });
+          sent = true
+      }catch(e){
+          console.log(e)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          tries++
+      }
+  }while(!sent && tries < 3)
+
+  
 }
   
 module.exports ={
@@ -155,5 +252,6 @@ module.exports ={
   sendEmailForgotPassword,
   sendEmailDate,
   sendEmailStatusDate,
-  sendEmailNewUser
+  sendEmailNewUser,
+  sendEmailReminder
 }

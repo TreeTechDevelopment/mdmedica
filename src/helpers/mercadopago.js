@@ -1,7 +1,7 @@
 const mercadopago = require('mercadopago');
 
 mercadopago.configure({
-    access_token: 'TEST-6627389014499609-012221-6e81b878d97f402a989986042136904c-705396309'
+    access_token: 'APP_USR-1188434953654106-011920-b0e1179ce63d10b9742ba252a8dd5e73-235075426'
 });
 
 const createPreferencID = (date, dateType, token) => {
@@ -50,7 +50,7 @@ const createPreferencID = (date, dateType, token) => {
         .then(function(response){
             resolve(response.body.id)
         }).catch(function(error){
-            reject(err)
+            reject(error)
         });
     })
 }

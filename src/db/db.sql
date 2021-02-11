@@ -11,12 +11,12 @@ CREATE TABLE clientes(
     telefono VARCHAR(12) NOT NULL,
     contrasena VARCHAR(100) NOT NULL,
     email VARCHAR(40) NOT NULL,
-    enfermedades VARCHAR(500) NOT NULL,
-    enfermedadesFam VARCHAR(500) NOT NULL,
     contacto VARCHAR(12) NOT NULL,
     alergias VARCHAR(500) NOT NULL,
     confirmado BOOL DEFAULT 0,
     imagen VARCHAR(300) DEFAULT NULL,
+    sexo VARCHAR(1) NOT NULL,
+    rh VARCHAR(8) NOT NULL,
     PRIMARY KEY (id)
 )
 
@@ -97,6 +97,7 @@ CREATE TABLE citas(
     cliente INT DEFAULT NULL,
     tipo BOOL DEFAULT 0,
     pagado BOOL DEFAULT 0,
+    sexo VARCHAR(1) NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_cliente_cita FOREIGN KEY (cliente) REFERENCES clientes(id)
 )
@@ -152,6 +153,54 @@ CREATE TABLE horarios(
     PRIMARY KEY (id),
     CONSTRAINT fk_medico_horario FOREIGN KEY (medico) REFERENCES medicos(id),
     CONSTRAINT fk_laboratorios_horario FOREIGN KEY (laboratorio) REFERENCES laboratorios(id)
+)
+
+CREATE TABLE enfermedadesCliente( 
+    id INT NOT NULL AUTO_INCREMENT,
+    texto VARCHAR(50) NOT NULL,
+    tipo VARCHAR(2) NOT NULL,
+    cliente INT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_cliente_enfermedad FOREIGN KEY (cliente) REFERENCES clientes(id),
+)
+
+CREATE TABLE parametros( 
+    id INT NOT NULL AUTO_INCREMENT,
+    servicio INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    tipo VARCHAR(3) DEFAULT 'INT',
+    unidades VARCHAR(10) DEFAULT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_parametro_servicio FOREIGN KEY (servicio) REFERENCES servicios(id)
+)
+
+CREATE TABLE referencias( 
+    id INT NOT NULL AUTO_INCREMENT,
+    sexo VARCHAR(1) NOT NULL,
+    param INT NOT NULL,
+    minRef INT DEFAULT NULL,
+    maxRef INT DEFAULT NULL,
+    minEdad INT NOT NULL,
+    maxEdad INT NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_parametro_referencia FOREIGN KEY (param) REFERENCES parametros(id)
+)
+
+CREATE TABLE resultados( 
+    id INT NOT NULL AUTO_INCREMENT,
+    cliente INT NOT NULL,
+    param INT NOT NULL,
+    cita INT NOT NULL,
+    resultado VARCHAR(100) NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    minRef INT DEFAULT NULL,
+    maxRef INT DEFAULT NULL,
+    medico VARCHAR(200) NOT NULL,
+    metodos VARCHAR(400) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_resultado_cliente FOREIGN KEY (cliente) REFERENCES clientes(id),
+    CONSTRAINT fk_resultado_param FOREIGN KEY (param) REFERENCES parametros(id),
+    CONSTRAINT fk_resultado_cita FOREIGN KEY (cita) REFERENCES citas(id)
 )
 
 INSERT INTO medicos (nombre, descripcion,estrellas,cargo,tipo,imagen) VALUES('NOMBRE MÉDICO', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'Médico General', 'MEDICO', 'https://mdmedica.herokuapp.com/static/media/img7.jpg')

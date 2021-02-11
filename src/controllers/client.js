@@ -7,6 +7,7 @@ const { sendEmailConfirmation, sendEmailForgotPassword } = require('../helpers/n
 const { validToken, createJWT, validTokenEmail } = require('../helpers/jwt')
 const { hashPassword, comparePassword } = require('../helpers/bcrypt')
 const { uploadToCloudinary } = require('../helpers/cloudinary')
+const { saveIllness } = require('../helpers/client')
 
 const handleClient = (req, res) => {
     res.sendFile(path.resolve(__dirname, '../../build/index.html'))
@@ -15,9 +16,9 @@ const handleClient = (req, res) => {
 const createUser = async (req, res) => {
     try{
 
-        const { name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, password, rh } = req.body
+        const { name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, password, rh, habits, sex } = req.body
 
-        if(!name || !age || !address || !phone || !email ||  !illness ||  !relativeIllness || !emergencyContact || !allergies || !bloodType || !password || !rh){
+        if(!name || !age || !address || !phone || !email ||  !illness ||  !relativeIllness || !emergencyContact || !allergies || !bloodType || !password || !rh || !habits || !sex){
             return res.sendStatus(400)
         }
 
@@ -27,13 +28,18 @@ const createUser = async (req, res) => {
 
         const passHashed = hashPassword(password)
 
-        const resDB = await db.query('INSERT INTO clientes (nombre, edad, direccion, telefono, email, enfermedades, enfermedadesFam, contacto, alergias, sangre, contrasena, rh) VALUES (?,?,?,?,?,?,?,?,?,?,?)', 
-                        [name, age, address, phone, email, illness, relativeIllness, emergencyContact, allergies, bloodType, passHashed, rh]) 
+        const resDB = await db.query('INSERT INTO clientes (nombre, edad, direccion, telefono, email, contacto, alergias, sangre, contrasena, rh, sexo) VALUES (?,?,?,?,?,?,?,?,?,?,?)', 
+                        [name, age, address, phone, email, emergencyContact, allergies, bloodType, passHashed, rh, sex]) 
+
+        await saveIllness(illness, resDB.insertId, 'EP')
+        await saveIllness(relativeIllness, resDB.insertId, 'PF')
+        await saveIllness(habits, resDB.insertId, 'H')
 
         try{
             await sendEmailConfirmation({ id: resDB.insertId, email, name })
         }catch(e){
             console.log(e)
+            await db.query('DELETE FROM enfermedadesCliente WHERE cliente = ?', [resDB.insertId]) 
             await db.query('DELETE FROM clientes WHERE id = ?', [resDB.insertId]) 
             return res.sendStatus(500)
         }
@@ -56,7 +62,7 @@ const verifyUser = async (req, res) => {
 
         if(err){ return res.json({ ok: false }) }
 
-        const resDB = await db.query('SELECT id, email, nombre, direccion, telefono, enfermedades, enfermedadesFam, contacto, alergias, sangre, edad FROM clientes WHERE id = ?', [id])
+        const resDB = await db.query('SELECT id, email, nombre, direccion, telefono, contacto, alergias, sangre, edad, rh FROM clientes WHERE id = ?', [id])
 
         if(resDB.length === 0){ return res.sendStatus(400) }
 
@@ -130,7 +136,10 @@ const forgotPassword = async (req, res) => {
 
         try{
             await sendEmailForgotPassword({ id: userDB[0].id, email, name: userDB[0].nombre })
-        }catch(e){ return res.sendStatus(500) }
+        }catch(e){ 
+            console.log(e)
+            return res.sendStatus(500) 
+        }
 
         res.json({ ok: true, message: 'Se ha enviado correctamente el correo a tu email' })
 
@@ -173,13 +182,20 @@ const getUser = async (req, res) => {
 
         if(!token){ return res.sendStatus(401) }
 
-        const user = await validToken(token)
+        let user = await validToken(token)
 
         if(user.err){ return res.sendStatus(401) }
+
+        const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'EP'])
+        const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'PF'])
+        const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'H'])
 
         delete user.confirmado
         delete user.exp
         delete user.iat
+        if(EP.length !== 0){ user.enfermedades = EP }
+        if(PF.length !== 0){ user.enfermedadesFam = PF }
+        if(H.length !== 0){ user.habitos = H }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .json({ user })
