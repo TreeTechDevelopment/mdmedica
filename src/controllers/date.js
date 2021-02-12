@@ -101,7 +101,6 @@ const getDate = async (req, res) => {
             params = await getParams(date)
             results = await db.query('SELECT * FROM resultados WHERE cita = ?', [id])
             const labDoctor = await db.query('SELECT nombre FROM usuarios WHERE id = ?', [user])
-            console.log(labDoctor)
             date[0].doctor = labDoctor[0].nombre
         }else{
             date = await db.query("SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, clientes.alergias, clientes.contacto, clientes.sangre, clientes.rh, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.id = ? AND citas.cliente = ? AND servicioCitas.aprobado = 1", [id, user])

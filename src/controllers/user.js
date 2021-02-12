@@ -71,8 +71,6 @@ const getInfoUser = async (req, res) => {
         let user = null
         if(medico){ user = await db.query('SELECT nombre, cargo, descripcion, imagen, facebook, instagram, telefono FROM medicos WHERE id = ?', [medico]) }
 
-        console.log(user)
-
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .json({ user: user[0] })
     }catch(e){

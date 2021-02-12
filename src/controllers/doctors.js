@@ -58,9 +58,6 @@ const postReview = async (req, res) => {
 
         const { err, id: user } = await validToken(token)
 
-        console.log(id)
-        console.log(review)
-
         if(err){ return res.sendStatus(401) }
 
         if(isNaN(Number(id)) || !review.stars){ return res.sendStatus(400) }
