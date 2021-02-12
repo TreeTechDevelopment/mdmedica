@@ -87,16 +87,26 @@ const editUser = async (req, res) => {
     
         if(!name || type === "" || description === ""){ return res.sendStatus(400) }
 
-        const { err, medico, laboratorio } = await validToken(token)
+        const { err, medico, laboratorio, id } = await validToken(token)
 
         if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
-    
-        if(image){
-            let resImage = await uploadToCloudinary(image.buffer.toString('base64'), `medico_${medico}`)
-    
-            await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, imagen = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, resImage.url, phone, medico])
+
+        const user = await db.query('SELECT tipo FROM usuarios WHERE id = ?', [id])
+
+        if(user[0].tipo === "MEDICO"){
+            if(image){
+                let resImage = await uploadToCloudinary(image.buffer.toString('base64'), `medico_${medico}`) 
+                await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, imagen = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, resImage.url, phone, medico])
+            }else{
+                await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, phone, medico])
+            }
         }else{
-            await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, phone, medico])
+            if(image){
+                let resImage = await uploadToCloudinary(image.buffer.toString('base64'), `medico_${medico}`) 
+                await db.query('UPDATE usuarios SET nombre = ?, cargo = ?, imagen = ? WHERE id = ?', [name, type, resImage.url, id])
+            }else{
+                await db.query('UPDATE usuarios SET nombre = ?, cargo = ? WHERE id = ?', [name, type, id])
+            }
         }
     
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })

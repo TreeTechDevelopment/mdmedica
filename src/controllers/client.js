@@ -82,15 +82,22 @@ const validUserToken = async (req, res) => {
 
         if(!token){ return res.sendStatus(400) }
 
-        const { err } = await validTokenEmail(token)
+        const { err, id, email } = await validTokenEmail(token)
 
         if(err){ return res.sendStatus(400) }
 
         let tokenDB = await db.query('SELECT token FROM jwtBlockList WHERE token = ?', [token])
 
+        let emailUser = ''
+
+        if(!email){ 
+            const user = db.query('SELECT email FROM clientes WHERE id = ?', [id]) 
+            emailUser = user[0].email
+        }
+
         if(tokenDB.length !== 0){ return res.sendStatus(400) }
 
-        res.sendStatus(200)
+        res.json({ email: email || emailUser })
     }catch(e){
         console.log(e)
         res.sendStatus(500)

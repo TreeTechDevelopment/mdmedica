@@ -4,9 +4,14 @@ const { validToken } = require('../helpers/jwt')
 
 const getAllMedicos = async (req, res) => {
     try{
-        let doctors = await db.query('SELECT * FROM medicos')
+        const { schedule } = req.query
 
-        res.json({ doctors })
+        let schedules = []
+        let doctors = await db.query('SELECT * FROM medicos') 
+
+        if(schedule){ schedules = await db.query('SELECT * FROM horarios') }
+
+        res.json({ doctors, schedule: schedules })
     }catch(e){
         console.log(e)
         res.sendStatus(500)
