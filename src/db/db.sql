@@ -31,8 +31,6 @@ CREATE TABLE servicios(
     CONSTRAINT fk_tipo FOREIGN KEY (tipo) REFERENCES laboratorios(id)
 )
 
-------------TABLA MODIFICADA ------------------
-
 CREATE TABLE laboratorios(
     id INT NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(40) NOT NULL,
@@ -57,8 +55,6 @@ CREATE TABLE medicos(
     PRIMARY KEY (id)
 )
 
--------------------TABLA MODIFICADA-------------
-
 CREATE TABLE usuarios(
     id INT NOT NULL AUTO_INCREMENT,
     contrasena VARCHAR(100) DEFAULT NULL,
@@ -72,7 +68,6 @@ CREATE TABLE usuarios(
     CONSTRAINT fk_medico_user FOREIGN KEY (medico) REFERENCES medicos(id)
 )
 
--------------------TABLA MODIFICADA-------------
 CREATE TABLE reviews(
     id INT NOT NULL AUTO_INCREMENT,
     texto TEXT DEFAULT NULL,
@@ -102,11 +97,9 @@ CREATE TABLE citas(
     CONSTRAINT fk_cliente_cita FOREIGN KEY (cliente) REFERENCES clientes(id)
 )
 
-------------- TABLA MODIFICADA -----------
-
 CREATE TABLE servicioCitas(
     id INT NOT NULL AUTO_INCREMENT,
-    medico INT DEFAULT NULL,
+    medico INT NOT NULL,
     servicio INT DEFAULT NULL,
     cita INT NOT NULL,
     aprobado BOOL DEFAULT 0,
@@ -145,11 +138,9 @@ CREATE TABLE imagenes(
     PRIMARY KEY (id)
 )
 
-------------TABLA MODIFICADA ---------------------
-
 CREATE TABLE horarios(
     id INT NOT NULL AUTO_INCREMENT,
-    medico INT DEFAULT NULL,
+    medico INT NOT NULL,
     inicio VARCHAR(5) NOT NULL,
     final VARCHAR(5) NOT NULL,
     dia INT NOT NULL,
@@ -187,8 +178,6 @@ CREATE TABLE referencias(
     PRIMARY KEY (id),
     CONSTRAINT fk_parametro_referencia FOREIGN KEY (param) REFERENCES parametros(id)
 )
-
-------------TABLA MODIFICADA ----------------
 
 CREATE TABLE resultados( 
     id INT NOT NULL AUTO_INCREMENT,
