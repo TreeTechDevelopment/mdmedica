@@ -87,15 +87,14 @@ const validUserToken = async (req, res) => {
         if(err){ return res.sendStatus(400) }
 
         let tokenDB = await db.query('SELECT token FROM jwtBlockList WHERE token = ?', [token])
+        if(tokenDB.length !== 0){ return res.sendStatus(400) }
 
         let emailUser = ''
 
         if(!email){ 
-            const user = db.query('SELECT email FROM clientes WHERE id = ?', [id]) 
+            const user = await db.query('SELECT email FROM clientes WHERE id = ?', [id]) 
             emailUser = user[0].email
         }
-
-        if(tokenDB.length !== 0){ return res.sendStatus(400) }
 
         res.json({ email: email || emailUser })
     }catch(e){

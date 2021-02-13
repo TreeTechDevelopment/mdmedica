@@ -31,11 +31,12 @@ CREATE TABLE servicios(
     CONSTRAINT fk_tipo FOREIGN KEY (tipo) REFERENCES laboratorios(id)
 )
 
+------------TABLA MODIFICADA ------------------
+
 CREATE TABLE laboratorios(
     id INT NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(40) NOT NULL,
     descripcion TEXT NOT NULL,
-    estrellas INT DEFAULT 0,
     imagen varchar(200) NOT NULL,
     PRIMARY KEY (id)
 )
@@ -56,32 +57,31 @@ CREATE TABLE medicos(
     PRIMARY KEY (id)
 )
 
+-------------------TABLA MODIFICADA-------------
+
 CREATE TABLE usuarios(
     id INT NOT NULL AUTO_INCREMENT,
     contrasena VARCHAR(100) DEFAULT NULL,
     email VARCHAR(40) NOT NULL,
     tipo VARCHAR(10) NOT NULL,
     medico INT DEFAULT NULL,
-    laboratorio INT DEFAULT NULL,
     nombre VARCHAR(200) DEFAULT '',
     cargo VARCHAR(50) DEFAULT '',
     imagen VARCHAR(200) DEFAULT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_medico_user FOREIGN KEY (medico) REFERENCES medicos(id)
-    CONSTRAINT fk_laboratorio_user FOREIGN KEY (laboratorio) REFERENCES laboratorios(id)
 )
 
+-------------------TABLA MODIFICADA-------------
 CREATE TABLE reviews(
     id INT NOT NULL AUTO_INCREMENT,
     texto TEXT DEFAULT NULL,
-    medico INT DEFAULT NULL,
-    servicio INT DEFAULT NULL,
+    medico INT NOT NULL,
     cliente INT NOT NULL,
     estrellas INT DEFAULT 0,
     aprobado BOOL DEFAULT 0,
     PRIMARY KEY (id),
     CONSTRAINT fk_medico FOREIGN KEY (medico) REFERENCES medicos(id),
-    CONSTRAINT fk_servicio FOREIGN KEY (servicio) REFERENCES servicios(id),
     CONSTRAINT fk_cleinte_review FOREIGN KEY (cliente) REFERENCES clientes(id) 
 )
 
@@ -101,6 +101,8 @@ CREATE TABLE citas(
     PRIMARY KEY (id),
     CONSTRAINT fk_cliente_cita FOREIGN KEY (cliente) REFERENCES clientes(id)
 )
+
+------------- TABLA MODIFICADA -----------
 
 CREATE TABLE servicioCitas(
     id INT NOT NULL AUTO_INCREMENT,
@@ -143,16 +145,16 @@ CREATE TABLE imagenes(
     PRIMARY KEY (id)
 )
 
+------------TABLA MODIFICADA ---------------------
+
 CREATE TABLE horarios(
     id INT NOT NULL AUTO_INCREMENT,
     medico INT DEFAULT NULL,
-    laboratorio INT DEFAULT NULL,
     inicio VARCHAR(5) NOT NULL,
     final VARCHAR(5) NOT NULL,
     dia INT NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_medico_horario FOREIGN KEY (medico) REFERENCES medicos(id),
-    CONSTRAINT fk_laboratorios_horario FOREIGN KEY (laboratorio) REFERENCES laboratorios(id)
+    CONSTRAINT fk_medico_horario FOREIGN KEY (medico) REFERENCES medicos(id)
 )
 
 CREATE TABLE enfermedadesCliente( 
@@ -186,6 +188,8 @@ CREATE TABLE referencias(
     CONSTRAINT fk_parametro_referencia FOREIGN KEY (param) REFERENCES parametros(id)
 )
 
+------------TABLA MODIFICADA ----------------
+
 CREATE TABLE resultados( 
     id INT NOT NULL AUTO_INCREMENT,
     cliente INT NOT NULL,
@@ -195,12 +199,13 @@ CREATE TABLE resultados(
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     minRef INT DEFAULT NULL,
     maxRef INT DEFAULT NULL,
-    medico VARCHAR(200) NOT NULL,
+    medico INT NOT NULL,
     metodos VARCHAR(400) NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_resultado_cliente FOREIGN KEY (cliente) REFERENCES clientes(id),
     CONSTRAINT fk_resultado_param FOREIGN KEY (param) REFERENCES parametros(id),
-    CONSTRAINT fk_resultado_cita FOREIGN KEY (cita) REFERENCES citas(id)
+    CONSTRAINT fk_resultado_cita FOREIGN KEY (cita) REFERENCES citas(id),
+    CONSTRAINT fk_resultado_medico FOREIGN KEY (medico) REFERENCES medicos(id)
 )
 
 INSERT INTO medicos (nombre, descripcion,estrellas,cargo,tipo,imagen) VALUES('NOMBRE MÉDICO', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 4, 'Médico General', 'MEDICO', 'https://mdmedica.herokuapp.com/static/media/img7.jpg')

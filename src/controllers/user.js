@@ -34,10 +34,6 @@ const login = async (req, res) => {
 
         if(!email && !password){ return res.sendStatus(400) }
 
-        /* await db.query('INSERT INTO usuarios (email, contrasena, medico, tipo) VALUES (?, ?, ?, ?)', [email, hashPassword(password), 4, 'ASISTENTE'])
-
-        return res.json({ userType: 'ASISTENTE' }) */
-
         const userDB = await db.query('SELECT * FROM usuarios WHERE email = ?', [email])
         
         if(userDB.length === 0){ return res.sendStatus(400) }
@@ -61,15 +57,20 @@ const getInfoUser = async (req, res) => {
     try{
 
         const { token } = req
+        const { getDoctor } = req.query
 
         if(!token){ return res.sendStatus(401) }
 
-        const { err, medico, laboratorio } = await validToken(token)
+        const { err, medico, tipo, id } = await validToken(token)
 
-        if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
+        if(err || (!medico && !tipo)){ return res.sendStatus(401) }
 
         let user = null
-        if(medico){ user = await db.query('SELECT nombre, cargo, descripcion, imagen, facebook, instagram, telefono FROM medicos WHERE id = ?', [medico]) }
+
+        const userDB = await db.query('SELECT nombre, cargo, imagen, tipo FROM usuarios WHERE id = ?', [id])
+
+        if(userDB[0].tipo !== "ASISTENTE" || getDoctor){ user = await db.query('SELECT nombre, cargo, descripcion, imagen, facebook, instagram, telefono FROM medicos WHERE id = ?', [medico]) }
+        else{ user = userDB }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .json({ user: user[0] })
@@ -84,16 +85,18 @@ const editUser = async (req, res) => {
         const image = req.file
         const { token } = req
         const { name, type, description, facebook, instagram, phone } = req.body
+        const { setDoctor } = req.query
+
     
-        if(!name || type === "" || description === ""){ return res.sendStatus(400) }
+        if(!name || type === ""){ return res.sendStatus(400) }
 
-        const { err, medico, laboratorio, id } = await validToken(token)
+        const { err, medico, tipo, id } = await validToken(token)
 
-        if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
+        if(err || (!medico && !tipo)){ return res.sendStatus(401) }
 
         const user = await db.query('SELECT tipo FROM usuarios WHERE id = ?', [id])
 
-        if(user[0].tipo === "MEDICO"){
+        if(user[0].tipo !== "ASISTENTE" || setDoctor){
             if(image){
                 let resImage = await uploadToCloudinary(image.buffer.toString('base64'), `medico_${medico}`) 
                 await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, imagen = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, resImage.url, phone, medico])
@@ -125,19 +128,19 @@ const saveSchedule = async (req, res) => {
     
         if(!monday || !tuesday || !wednesday || !thursday || !friday || !saturday || !sunday){ return res.sendStatus(400) }
 
-        const { err, medico, laboratorio } = await validToken(token)
+        const { err, medico } = await validToken(token)
 
-        if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
+        if(err || !medico){ return res.sendStatus(401) }
 
         await db.query('DELETE FROM horarios WHERE medico = ?',[medico])
     
-        await setScheduleDay(monday, 1, medico, laboratorio)
-        await setScheduleDay(tuesday, 2, medico, laboratorio)
-        await setScheduleDay(wednesday, 3, medico, laboratorio)
-        await setScheduleDay(thursday, 4, medico, laboratorio)
-        await setScheduleDay(friday, 5, medico, laboratorio)
-        await setScheduleDay(saturday, 6, medico, laboratorio)
-        await setScheduleDay(sunday, 0, medico, laboratorio)
+        await setScheduleDay(monday, 1, medico)
+        await setScheduleDay(tuesday, 2, medico)
+        await setScheduleDay(wednesday, 3, medico)
+        await setScheduleDay(thursday, 4, medico)
+        await setScheduleDay(friday, 5, medico)
+        await setScheduleDay(saturday, 6, medico)
+        await setScheduleDay(sunday, 0, medico)
     
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .sendStatus(200)
@@ -152,9 +155,9 @@ const getSchedule = async (req, res) => {
     try{
         const { token } = req
 
-        const { err, medico, laboratorio } = await validToken(token)
+        const { err, medico, tipo } = await validToken(token)
 
-        if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
+        if(err || !medico ){ return res.sendStatus(401) }
 
         let monday = []
         let tuesday = []
@@ -164,23 +167,13 @@ const getSchedule = async (req, res) => {
         let saturday = []
         let sunday = []
 
-        if(medico){
-            monday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 1', [medico])
-            tuesday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 2', [medico])
-            wednesday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 3', [medico])
-            thursday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 4', [medico])
-            friday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 5', [medico])
-            saturday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 6', [medico])
-            sunday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 0', [medico])
-        }else{
-            monday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 1', [laboratorio])
-            tuesday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 2', [laboratorio])
-            wednesday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 3', [laboratorio])
-            thursday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 4', [laboratorio])
-            friday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 5', [laboratorio])
-            saturday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 6', [laboratorio])
-            sunday = await db.query('SELECT * FROM horarios WHERE laboratorio = ? AND dia = 0', [laboratorio])
-        }
+        monday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 1', [medico])
+        tuesday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 2', [medico])
+        wednesday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 3', [medico])
+        thursday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 4', [medico])
+        friday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 5', [medico])
+        saturday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 6', [medico])
+        sunday = await db.query('SELECT * FROM horarios WHERE medico = ? AND dia = 0', [medico])
     
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .json({ monday, tuesday, wednesday, thursday, friday, saturday, sunday })
@@ -318,6 +311,8 @@ const getUser = async (req, res) => {
 
         const user = await db.query('SELECT medicos.cargo, medicos.nombre, email, usuarios.tipo, usuarios.id, medicos.imagen, usuarios.nombre AS usanombre, usuarios.cargo AS usacargo, usuarios.imagen AS usaimagen FROM usuarios LEFT JOIN medicos ON usuarios.medico = medicos.id WHERE usuarios.id = ?', [Number(id)])
 
+        console.log(user)
+
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .json({ user: user[0] })
     }catch(e){
@@ -353,14 +348,17 @@ const deleteUser = async (req, res) => {
 const createUser = async (req, res) => {
     try{
         const { token } = req
-        const { email, userType, speciality, doctorType, labType, asisType } = req.body
+        const { email, userType, speciality, doctorType,  asisType } = req.body
 
-        if(!email || !userType || !speciality || (userType.value === "MEDICO" && !doctorType) || 
-        (userType.value === "LAB" && !labType) || (userType.value === "ASISTENTE" && !asisType)){ return res.sendStatus(400) }
+        if(!email || !userType || !speciality || (userType.value === "MEDICO" && !doctorType) || (userType.value === "ASISTENTE" && !asisType)){ return res.sendStatus(400) }
 
         const { err, tipo } = await validToken(token)
 
         if(err || !tipo || tipo !== "ADMIN"){ return res.sendStatus(401) }
+
+        const userExist = await db.query('SELECT id FROM usuarios WHERE email = ?', [email])
+
+        if(userExist.length !== 0){ return res.json({ ok: false, message: 'Ya existe un usuario con este email.' }) }
 
         let id = null
         let doctorID = null
@@ -371,7 +369,7 @@ const createUser = async (req, res) => {
             doctorID = newDoctor.insertId
             id = newUser.insertId
         }else if(userType.value === "LAB"){
-            const newUser = await db.query('INSERT INTO usuarios (email, laboratorio, tipo) VALUES (?, ?, ?)', [email, labType.value, 'LAB'])
+            const newUser = await db.query('INSERT INTO usuarios (email, tipo) VALUES (?, ?, ?)', [email, 'LAB'])
             id = newUser.insertId
         }else{
             const newUser = await db.query('INSERT INTO usuarios (email, medico, tipo) VALUES (?, ?, ?)', [email, asisType.value, 'ASISTENTE'])
@@ -388,7 +386,7 @@ const createUser = async (req, res) => {
         }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
-        .sendStatus(200)
+        .json({ ok: true })
     }catch(e){
         console.log(e)
         res.sendStatus(500)

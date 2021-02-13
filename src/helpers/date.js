@@ -10,7 +10,7 @@ const checkDateHour = async (date, doctor, labs) => {
         message = 'La hora seleccionada no está dentro del horario de atención de este médico.'
     }else{
         for(let i = 0; i < labs.length; i++){
-            const schedule = await db.query('SELECT inicio, final FROM horarios INNER JOIN laboratorios ON horarios.laboratorio = laboratorios.id INNER JOIN servicios ON laboratorios.id = servicios.tipo WHERE servicios.id = ? AND dia = ?', [labs[i].id, newDate.getDay()])
+            const schedule = await db.query('SELECT inicio, final FROM horarios WHERE usuarios IS NOT NULL AND dia = ?', [newDate.getDay()])
             okDate = dateInPeriod(schedule, newDate)
         }
         message = 'La hora seleccionada no está dentro del horario de atención de este servicio.'

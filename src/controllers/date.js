@@ -11,7 +11,7 @@ const postDate = async (req, res) => {
             homeService, doctor, labs, clientID } = req.body 
 
         if(!name || !date || !age || (!illness && type === "medico") || !phone || !email || typeof (homeService) === "undefined"|| (type !== "medico" && type !== "laboratorio") ||
-        (type === "medico" && !doctor) || (type === "laboratorio" && !labs && labs.length === 0) || (homeService && !address)){
+        !doctor || (type === "laboratorio" && !labs && labs.length === 0) || (homeService && !address)){
             return res.sendStatus(400)
         }
 
@@ -32,7 +32,7 @@ const postDate = async (req, res) => {
             await db.query('INSERT INTO servicioCitas (medico, cita) VALUES (?,?)', [doctor.id, resDB.insertId])
         }else{
             for(let i = 0; i < labs.length; i++){
-                await db.query('INSERT INTO servicioCitas (servicio, cita) VALUES (?,?)', [labs[i].id, resDB.insertId])
+                await db.query('INSERT INTO servicioCitas (servicio, cita, medico) VALUES (?,?,?)', [labs[i].id, resDB.insertId, doctor.id])
             }
         }
 
@@ -72,39 +72,35 @@ const getDate = async (req, res) => {
         if(!token){ return res.sendStatus(401) }
         if(!id || isNaN(Number(id))){  return res.sendStatus(400) }
 
-        const { err, medico, id: user, laboratorio } = await validToken(token)
+        const { err, medico, id: user, tipo } = await validToken(token)
 
-        if(err || (!medico && !id && !laboratorio)){ return res.sendStatus(401) }
+        if(err || (!medico && !id && !tipo)){ return res.sendStatus(401) }
 
         let date = []
         let recipe = []
         let params = []
         let results = []
-        
-        if(medico){
-            if(!isNaN(Number(serv_id))){
-                date = await db.query("SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, clientes.alergias, clientes.contacto, clientes.rh, clientes.sangre, citas.pagado, clientes.direccion AS clienteDireccion, servicios.nombre AS servnombre, servicios.id AS servId, servicios.tipo AS servtipo FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.cita = ? AND servicioCitas.aprobado = 1 AND servicioCitas.servicio = ?", [id, Number(serv_id)])
-                params = await getParams(date)
-                results = await db.query('SELECT * FROM resultados WHERE cita = ?', [id])
-                const labDoctor = await db.query('SELECT usuarios.nombre FROM usuarios INNER JOIN laboratorios ON usuarios.laboratorio = laboratorios.id WHERE laboratorios.id = ?', [date[0].servtipo])
-                date[0].doctor = labDoctor[0].nombre
-            }else{
-                date = await db.query("SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, clientes.alergias, clientes.contacto, clientes.sangre, citas.pagado, clientes.rh FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.cita = ? AND servicioCitas.medico = ? AND servicioCitas.aprobado = 1", [id, medico])
-                recipe = await db.query("SELECT receta FROM recetas WHERE cita = ? ", [id])
-            }
-        }else if(laboratorio || !isNaN(Number(serv_id))){
-            if(!isNaN(Number(serv_id))){
-                date = await db.query("SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, clientes.alergias, clientes.contacto, clientes.rh, clientes.sangre, citas.pagado, clientes.direccion AS clienteDireccion, servicios.nombre AS servnombre, servicios.id AS servId FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.cita = ? AND servicios.tipo = ? AND servicioCitas.aprobado = 1 AND servicioCitas.servicio = ?", [id, laboratorio, Number(serv_id)])
-            }else{
-                date = await db.query("SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, clientes.alergias, clientes.contacto, clientes.rh, clientes.sangre, citas.pagado, clientes.direccion AS clienteDireccion, servicios.nombre AS servnombre, servicios.id AS servId FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.cita = ? AND servicios.tipo = ? AND servicioCitas.aprobado = 1", [id, laboratorio])
-            }
+
+        if(!isNaN(Number(serv_id))){
+            date = await db.query(`SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
+                                    clientes.alergias, clientes.contacto, clientes.rh, clientes.sangre, citas.pagado, clientes.direccion AS clienteDireccion, servicios.nombre AS servnombre, 
+                                    servicios.id AS servId, servicios.tipo AS servtipo, medicos.nombre AS doctor FROM servicioCitas 
+                                    INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                    LEFT JOIN clientes ON citas.cliente = clientes.id INNER JOIN medicos ON servicioCitas.medico = medicos.id 
+                                    WHERE servicioCitas.cita = ? AND servicioCitas.aprobado = 1 AND servicioCitas.servicio = ?`, [id, Number(serv_id)])
             params = await getParams(date)
             results = await db.query('SELECT * FROM resultados WHERE cita = ?', [id])
-            const labDoctor = await db.query('SELECT nombre FROM usuarios WHERE id = ?', [user])
-            date[0].doctor = labDoctor[0].nombre
         }else{
-            date = await db.query("SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, clientes.alergias, clientes.contacto, clientes.sangre, clientes.rh, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.id = ? AND citas.cliente = ? AND servicioCitas.aprobado = 1", [id, user])
-            recipe = await db.query("SELECT receta FROM recetas WHERE cita = ? ", [id])
+            date = await db.query(`SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
+                                    clientes.alergias, clientes.contacto, clientes.sangre, citas.pagado, clientes.rh, medicos.nombre AS doctor FROM servicioCitas 
+                                    INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                    WHERE servicioCitas.cita = ? AND servicioCitas.medico = ? AND servicioCitas.aprobado = 1`, [id, medico])
+            if(tipo === "LAB"){
+                params = await getParams(date)
+                results = await db.query('SELECT * FROM resultados WHERE cita = ?', [id])
+            }else{
+                recipe = await db.query("SELECT receta FROM recetas WHERE cita = ? ", [id])
+            }
         }
 
         const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'EP'])
@@ -125,30 +121,46 @@ const getDate = async (req, res) => {
 
 const getDatesHistory = async (req, res) => {
     try{
-
         const { token } = req
         const { start, unaproved } = req.query
 
         if(!token){ return res.sendStatus(401) }
         if(!start || isNaN(Number(start))){  return res.sendStatus(400) }
 
-        const { err, medico, laboratorio, id: user } = await validToken(token)
+        const { err, medico,  id: user, tipo } = await validToken(token)
 
-        if(err || (!medico && !laboratorio && !user)){ return res.sendStatus(401) }
+        if(err || (!medico && !tipo && !user)){ return res.sendStatus(401) }
 
         let dates = []
 
         if(unaproved){ 
-            if(medico){
-                dates = await db.query("SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.email, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 0 ORDER BY citas.fecha DESC LIMIT ?, ?", [medico, Number(start), Number(start)+20])
+            if(tipo !== "LAB"){
+                dates = await db.query(`SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.email, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 0 ORDER BY citas.fecha DESC LIMIT ?, ?`, [medico, Number(start), Number(start)+20])
             }else{
-                dates = await db.query("SELECT servicioCitas.id, imagen, cita, citas.nombre, fecha, citas.email, servicios.nombre AS servnombre, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicios.tipo = ? AND servicioCitas.aprobado = 0 ORDER BY citas.fecha DESC LIMIT ?, ?", [laboratorio, Number(start), Number(start)+20])
+                dates = await db.query(`SELECT servicioCitas.id, imagen, cita, citas.nombre, fecha, citas.email, servicios.nombre AS servnombre, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                        LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 0 ORDER BY citas.fecha DESC LIMIT ?, ?`, [medico,  Number(start), Number(start)+20])
             }
-        }else if(medico || laboratorio){
-            if(medico){ dates = await db.query("SELECT servicioCitas.id, imagen, cita, citas.nombre, fecha, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 1 ORDER BY citas.fecha DESC LIMIT ?, ?", [medico, Number(start), Number(start)+20]) }
-            else{ dates = await db.query("SELECT servicioCitas.id, imagen, cita, citas.nombre, fecha, citas.email, servicios.nombre AS servnombre, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicios.tipo = ? AND servicioCitas.aprobado = 1 ORDER BY citas.fecha DESC LIMIT ?, ?", [laboratorio, Number(start), Number(start)+20]) }
+        }else if(tipo){
+            if(tipo !== "LAB"){ 
+                dates = await db.query(`SELECT servicioCitas.id, imagen, cita, citas.nombre, fecha, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 1 ORDER BY citas.fecha DESC LIMIT ?, ?`, [medico, Number(start), Number(start)+20]) 
+            }else{ 
+                dates = await db.query(`SELECT servicioCitas.id, imagen, cita, citas.nombre, fecha, citas.email, servicios.nombre AS servnombre, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                        LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 1 AND citas.tipo = 1 ORDER BY citas.fecha DESC LIMIT ?, ?`, [medico, Number(start), Number(start)+20]) 
+            }
         }else{
-            dates = await db.query("SELECT servicioCitas.id, citas.padecimiento, fecha, aprobado, medicos.nombre, medicos.cargo, medico, servicio, servicios.nombre AS servnombre, citas.pagado, citas.direccion FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN medicos ON servicioCitas.medico = medicos.id LEFT JOIN servicios ON servicioCitas.servicio = servicios.id WHERE citas.cliente = ? ORDER BY citas.fecha DESC LIMIT ?, ?", [user, Number(start), Number(start)+20])
+            dates = await db.query(`SELECT servicioCitas.id, citas.padecimiento, fecha, aprobado, medicos.nombre, medicos.cargo, medico, servicio, 
+                                    servicios.nombre AS servnombre, citas.pagado, citas.direccion FROM servicioCitas 
+                                    INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN medicos ON servicioCitas.medico = medicos.id 
+                                    LEFT JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                    WHERE citas.cliente = ? ORDER BY citas.fecha DESC LIMIT ?, ?`, [user, Number(start), Number(start)+20])
         }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
@@ -176,9 +188,13 @@ const getDatesPatients = async (req, res) => {
         let dates = []
 
         if(!isNaN(Number(user))){
-            dates = await db.query("SELECT citas.id, citas.cliente, fecha, servicios.nombre AS servnombre, servicios.id AS servId FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id WHERE citas.cliente = ? AND servicioCitas.aprobado = 1 AND citas.tipo = 1 ORDER BY citas.fecha DESC LIMIT ?, ?", [Number(user), Number(start), Number(start)+20])
+            dates = await db.query(`SELECT citas.id, citas.cliente, fecha, servicios.nombre AS servnombre, servicios.id AS servId FROM servicioCitas 
+                                    INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                    WHERE citas.cliente = ? AND servicioCitas.aprobado = 1 AND citas.tipo = 1 ORDER BY citas.fecha DESC LIMIT ?, ?`, [Number(user), Number(start), Number(start)+20])
         }else{
-            dates = await db.query("SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.cliente FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 1 ORDER BY clientes.nombre, citas.fecha DESC LIMIT ?, ?", [medico, Number(start), Number(start)+20])
+            dates = await db.query(`SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.cliente FROM servicioCitas 
+                                INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN clientes ON citas.cliente = clientes.id 
+                                WHERE servicioCitas.medico = ? AND servicioCitas.aprobado = 1 ORDER BY clientes.nombre, citas.fecha DESC LIMIT ?, ?`, [medico, Number(start), Number(start)+20])
         }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
@@ -198,9 +214,9 @@ const getDatesFilter = async (req, res) => {
 
         if(!token){ return res.sendStatus(401) }
 
-        const { err, medico, laboratorio } = await validToken(token)
+        const { err, medico, tipo } = await validToken(token)
 
-        if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
+        if(err || (!medico && !tipo)){ return res.sendStatus(401) }
         if((!date && !patient) || (!patient && isNaN(Number(date)))){ return res.sendStatus(400) }
 
         let dates = []
@@ -210,17 +226,29 @@ const getDatesFilter = async (req, res) => {
             const dateFrom = `${newDate.getFullYear()}-${newDate.getMonth()+1}-${newDate.getDate()} 00:00:00`
             const dateTo = `${newDate.getFullYear()}-${newDate.getMonth()+1}-${newDate.getDate()} 23:59:59`
 
-            if(medico){
-                dates = await db.query("SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.edad, citas.direccion, citas.padecimiento, citas.telefono, citas.email, clientes.rh, clientes.sangre, clientes.contacto, clientes.alergias, clientes.direccion AS clienteDireccion, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.medico = ? AND citas.fecha BETWEEN ? AND ? AND servicioCitas.aprobado = 1", [medico, dateFrom, dateTo])
+            if(tipo === "LAB"){
+                dates = await db.query(`SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.edad, citas.direccion, cita, servicios.nombre AS servnombre, citas.telefono, 
+                                        citas.email, clientes.rh, clientes.sangre, clientes.contacto, citas.pagado, clientes.alergias, clientes.direccion AS clienteDireccion FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                        LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND citas.fecha BETWEEN ? AND ? AND servicioCitas.aprobado = 1`, [medico, dateFrom, dateTo])
             }else{
-                dates = await db.query("SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.edad, citas.direccion, cita, servicios.nombre AS servnombre, citas.telefono, citas.email, clientes.rh, clientes.sangre, clientes.contacto, citas.pagado, clientes.alergias, clientes.direccion AS clienteDireccion FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicios.tipo = ? AND citas.fecha BETWEEN ? AND ? AND servicioCitas.aprobado = 1", [laboratorio, dateFrom, dateTo])
+                dates = await db.query(`SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.edad, citas.direccion, citas.padecimiento, citas.telefono, citas.email, clientes.rh, 
+                                        clientes.sangre, clientes.contacto, clientes.alergias, clientes.direccion AS clienteDireccion, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND citas.fecha BETWEEN ? AND ? AND servicioCitas.aprobado = 1`, [medico, dateFrom, dateTo])
             }
 
         }else{
-            if(medico){
-                dates = await db.query("SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.cliente, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicioCitas.medico = ? AND clientes.nombre LIKE ? AND servicioCitas.aprobado = 1", [medico, `%${patient}%`])
+            if(tipo === "LAB"){
+                dates = await db.query(`SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.cliente, servicios.nombre AS servnombre, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
+                                        LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND clientes.nombre LIKE ? AND servicioCitas.aprobado = 1`, [medico, `%${patient}%`])
             }else{
-                dates = await db.query("SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.cliente, servicios.nombre AS servnombre, citas.pagado FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id LEFT JOIN clientes ON citas.cliente = clientes.id WHERE servicios.tipo = ? AND clientes.nombre LIKE ? AND servicioCitas.aprobado = 1", [laboratorio, `%${patient}%`])
+                dates = await db.query(`SELECT servicioCitas.id, imagen, citas.nombre, fecha, citas.cliente, citas.pagado FROM servicioCitas 
+                                        INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                        WHERE servicioCitas.medico = ? AND clientes.nombre LIKE ? AND servicioCitas.aprobado = 1`, [medico, `%${patient}%`])
             }
         }
 
@@ -243,37 +271,35 @@ const aproveDate = async (req, res) => {
         if(!token){ return res.sendStatus(401) }
         if(!id){  return res.sendStatus(400) }
 
-        const { err, medico, laboratorio } = await validToken(token)
+        const { err, medico, tipo } = await validToken(token)
 
-        if(err || (!medico && !laboratorio)){ return res.sendStatus(401) }
+        if(err || (!medico && !tipo)){ return res.sendStatus(401) }
 
         let doctor = null
 
-        if(medico){ doctor = await db.query("SELECT nombre, cargo FROM medicos WHERE id = ?", [medico]) }
+        if(tipo !== "LAB"){ doctor = await db.query("SELECT nombre, cargo FROM medicos WHERE id = ?", [medico]) }
 
         const newDate = new Date(fecha)
         const dateEmail = `${newDate.getDate()} de ${getMonthName(newDate.getMonth())} de ${newDate.getFullYear()} a las ${twoDigits(newDate.getHours())}:${twoDigits(newDate.getMinutes())}`
 
         if(aprove){
-            const text = medico ? `Se ha confirmado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre}.` : 
+            const text = tipo !== "LAB" ? `Se ha confirmado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre}.` : 
                         `Se ha confirmado tu cita el ${dateEmail}, para los siguientes laboratorios: ${servnombre}.`
-            if(medico){ await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE servicioCitas.medico = ? AND id = ?", [medico, id]) }
-            else{ await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE servicioCitas.cita = ?", [cita]) }
+
+            await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE medico = ? AND cita = ?", [medico, cita])
 
             try{ await sendEmailStatusDate({ email, name: nombre, text }) }
             catch(e){
                 console.log(e)
-                if(medico){ await db.query("UPDATE servicioCitas SET aprobado = 0 WHERE servicioCitas.medico = ? AND id = ?", [medico, id]) }
-                else{ await db.query("UPDATE servicioCitas SET aprobado = 0 WHERE servicioCitas.cita = ?", [cita]) }
+                await db.query("UPDATE servicioCitas SET aprobado = 0 WHERE servicioCitas.medico = ? AND cita = ?", [medico, cita])
                 return res.sendStatus(500)
             }
         }else{
-            const text = medico ? `Se ha rechazado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre} .` :
+            const text = tipo !== "LAB" ? `Se ha rechazado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre} .` :
                         `Se ha rechazado tu cita el ${dateEmail}, para los siguientes laboratorios: ${servnombre}.` 
             try{ 
                 await sendEmailStatusDate({ email, name: nombre, text }) 
-                if(medico){ await db.query("DELETE FROM servicioCitas WHERE servicioCitas.medico = ? AND id = ?", [medico, id]) }
-                else{ await db.query("DELETE FROM servicioCitas WHERE servicioCitas.cita = ?", [cita]) }
+                await db.query("DELETE FROM servicioCitas WHERE cita = ? AND medico = ?", [cita, medico])
             }
             catch(e){
                 console.log(e)
@@ -321,13 +347,13 @@ const postResults = async (req, res) => {
     try{
 
         const { token } = req
-        const { results, refs, id, doctor, methods } = req.body
+        const { results, refs, id,  methods } = req.body
 
-        if(!token || isNaN(Number(id)) || !results || !refs || !doctor || !methods){ return res.sendStatus(401) }
+        if(!token || isNaN(Number(id)) || !results || !refs || !methods){ return res.sendStatus(401) }
 
-        const { err, laboratorio } = await validToken(token)
+        const { err, tipo, medico } = await validToken(token)
 
-        if(err && !laboratorio){ return res.sendStatus(401) }
+        if(err && !tipo){ return res.sendStatus(401) }
 
         const date = await db.query('SELECT cliente FROM citas WHERE id = ?', [Number(id)])
 
@@ -337,9 +363,9 @@ const postResults = async (req, res) => {
                 for(let j = 0; j < results[i].results.length; j++){
                     const ref = await db.query('SELECT minRef, maxRef, param FROM referencias WHERE param = ?', [refs[i].refs[j].id])
                     if(ref[0].minRef == refs[i].refs[j].min && ref[0].maxRef == refs[i].refs[j].max){
-                        await db.query('INSERT INTO resultados (cliente, param, cita, resultado, medico, metodos) VALUES (?, ?, ?, ?, ?, ?)', [date[0].cliente, refs[i].refs[j].id, Number(id), results[i].results[j], doctor, methods[i].map(item => item.value).join(', ')])
+                        await db.query('INSERT INTO resultados (cliente, param, cita, resultado, medico, metodos) VALUES (?, ?, ?, ?, ?, ?)', [date[0].cliente, refs[i].refs[j].id, Number(id), results[i].results[j], medico, methods[i].map(item => item.value).join(', ')])
                     }else{
-                        await db.query('INSERT INTO resultados (cliente, param, cita, resultado, medico, metodos, minRef, maxRef) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [date[0].cliente, refs[i].refs[j].id, Number(id), results[i].results[j], doctor, methods[i].map(item => item.value).join(', '), Number(refs[i].refs[j].min), Number(refs[i].refs[j].max)])
+                        await db.query('INSERT INTO resultados (cliente, param, cita, resultado, medico, metodos, minRef, maxRef) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [date[0].cliente, refs[i].refs[j].id, Number(id), results[i].results[j], medico, methods[i].map(item => item.value).join(', '), Number(refs[i].refs[j].min), Number(refs[i].refs[j].max)])
                     }
                 }
             }
