@@ -52,6 +52,7 @@ CREATE TABLE medicos(
     instagram VARCHAR(300) DEFAULT NULL,
     precio INT DEFAULT 0,
     precioDomicilio INT DEFAULT 0,
+    activo BOOL DEFAULT 1,
     PRIMARY KEY (id)
 )
 

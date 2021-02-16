@@ -9,7 +9,7 @@ const getAllMedicos = async (req, res) => {
         let schedules = []
         let doctors = await db.query('SELECT * FROM medicos') 
 
-        if(schedule){ schedules = await db.query('SELECT * FROM horarios INNER JOIN medicos ON medicos.id = horarios.medico WHERE medicos.tipo != ?', ['QUIMICO']) }
+        if(schedule){ schedules = await db.query('SELECT * FROM horarios INNER JOIN medicos ON medicos.id = horarios.medico WHERE medicos.tipo != ? AND activo = 1', ['QUIMICO']) }
 
         res.json({ doctors, schedule: schedules })
     }catch(e){
@@ -28,7 +28,7 @@ const getMedico = async (req, res) => {
         const { id } = req.params
         if(!id){ return res.sendStatus(400) }
 
-        let doctor = await db.query('SELECT * FROM medicos WHERE id = ?', [id])
+        let doctor = await db.query('SELECT * FROM medicos WHERE id = ? AND activo = 1', [id])
         if(doctor.length === 0){ return res.sendStatus(400) }
 
         let response = { info: doctor[0] }

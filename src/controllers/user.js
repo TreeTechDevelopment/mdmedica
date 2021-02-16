@@ -335,7 +335,7 @@ const deleteUser = async (req, res) => {
         const user = await db.query('SELECT medico, tipo FROM usuarios WHERE id = ?', [Number(id)])
 
         await db.query('DELETE FROM usuarios WHERE id = ?', [Number(id)])
-        if(user[0].tipo !== "ASISTENTE"){ await db.query('DELETE FROM medicos WHERE id = ?', [user[0].medico]) }
+        if(user[0].tipo !== "ASISTENTE"){ await db.query('UPDATE medicos SET activo = 0 WHERE id = ?', [user[0].medico]) }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .sendStatus(200)
