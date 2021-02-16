@@ -196,15 +196,16 @@ const getUser = async (req, res) => {
 
         if(err){ return res.sendStatus(401) }
 
-        let user = await db.query('SELECT * FROM clientes WHERE id = ?', [id])
+        let user = await db.query('SELECT id, nombre, sangre, edad, direccion, telefono, email, contacto, alergias, imagen, sexo, rh FROM clientes WHERE id = ? AND confirmado = 1', [id])
 
         const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'EP'])
         const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'PF'])
         const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'H'])
 
-        delete user[0].confirmado
-        delete user[0].exp
-        delete user[0].iat
+        console.log(EP)
+        console.log(PF)
+        console.log(H)
+
         if(EP.length !== 0){ user[0].enfermedades = EP }
         if(PF.length !== 0){ user[0].enfermedadesFam = PF }
         if(H.length !== 0){ user[0].habitos = H }
