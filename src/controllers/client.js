@@ -192,23 +192,25 @@ const getUser = async (req, res) => {
 
         if(!token){ return res.sendStatus(401) }
 
-        let user = await validToken(token)
+        let { id, err } = await validToken(token)
 
-        if(user.err){ return res.sendStatus(401) }
+        if(err){ return res.sendStatus(401) }
+
+        let user = await db.query('SELECT * FROM clientes WHERE id = ?', [id])
 
         const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'EP'])
         const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'PF'])
         const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'H'])
 
-        delete user.confirmado
-        delete user.exp
-        delete user.iat
-        if(EP.length !== 0){ user.enfermedades = EP }
-        if(PF.length !== 0){ user.enfermedadesFam = PF }
-        if(H.length !== 0){ user.habitos = H }
+        delete user[0].confirmado
+        delete user[0].exp
+        delete user[0].iat
+        if(EP.length !== 0){ user[0].enfermedades = EP }
+        if(PF.length !== 0){ user[0].enfermedadesFam = PF }
+        if(H.length !== 0){ user[0].habitos = H }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
-        .json({ user })
+        .json({ user: user[0] })
 
     }catch(e){
         console.log(e)
@@ -222,6 +224,8 @@ const editUser = async (req, res) => {
         const { token } = req
         const { name, age, phone, address, contact } = req.body
 
+        console.log(image)
+
         if(!name || !age || !phone || !address || !contact || name === "" || age === "" || phone === "" || address === "" || contact === ""){ return res.sendStatus(400) }
 
         const { err, id } = await validToken(token)
@@ -230,6 +234,8 @@ const editUser = async (req, res) => {
 
         if(image){
             let resImage = await uploadToCloudinary(image.buffer.toString('base64'), id)
+
+            console.log(resImage)
 
             await db.query('UPDATE clientes SET nombre = ?, edad = ?, direccion = ?, telefono = ?, contacto = ?, imagen = ? WHERE id = ?', [name, age, address, phone, contact, resImage.url, id])
         }else{
