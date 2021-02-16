@@ -96,8 +96,9 @@ const validUserToken = async (req, res) => {
             const user = await db.query('SELECT email FROM clientes WHERE id = ?', [id]) 
             emailUser = user[0].email
         }else{
-            const doctor = await db.query('SELECT cargo FROM medicos INNER JOIN usuarios ON usuarios.medico = medicos.id WHERE usuarios.id = ?',[id])
-            doctorType = doctor[0].cargo
+            const doctor = await db.query('SELECT usuarios.cargo, medicos.cargo AS medcargo FROM medicos INNER JOIN usuarios ON usuarios.medico = medicos.id WHERE usuarios.id = ?',[id])
+            if(doctor[0].cargo){ doctorType = doctor[0].cargo }
+            else{ doctorType = doctor[0].medcargo }
         }
 
         res.json({ email: email || emailUser, doctorType })
