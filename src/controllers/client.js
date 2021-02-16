@@ -198,9 +198,9 @@ const getUser = async (req, res) => {
 
         let user = await db.query('SELECT * FROM clientes WHERE id = ?', [id])
 
-        const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'EP'])
-        const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'PF'])
-        const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [user.id, 'H'])
+        const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'EP'])
+        const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'PF'])
+        const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'H'])
 
         delete user[0].confirmado
         delete user[0].exp
