@@ -332,7 +332,7 @@ const deleteUser = async (req, res) => {
 
         if(err || !tipo || tipo !== "ADMIN"){ return res.sendStatus(401) }
 
-        const user = await db.query('SELECT medico FROM usuarios WHERE id = ?', [id])
+        const user = await db.query('SELECT medico FROM usuarios WHERE id = ?', [Number(id)])
 
         await db.query('DELETE FROM usuarios WHERE id = ?', [Number(id)])
         await db.query('DELETE FROM medicos WHERE id = ?', [user[0].medico])
