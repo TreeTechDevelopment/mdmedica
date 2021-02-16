@@ -133,14 +133,6 @@ const saveSchedule = async (req, res) => {
         if(err || !medico){ return res.sendStatus(401) }
 
         await db.query('DELETE FROM horarios WHERE medico = ?',[medico])
-
-        console.log(monday)
-        console.log(tuesday)
-        console.log(wednesday)
-        console.log(thursday)
-        console.log(friday)
-        console.log(saturday)
-        console.log(sunday)
     
         await setScheduleDay(monday, 1, medico)
         await setScheduleDay(tuesday, 2, medico)
