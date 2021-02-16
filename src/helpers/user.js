@@ -2,7 +2,7 @@ const db = require('../db/db')
 
 const { twoDigits } = require('./common')
 
-const setScheduleDay = async (dayArray, day, medico, labid) => {
+const setScheduleDay = async (dayArray, day, medico) => {
     for(const period of dayArray){
         const newDateStart = new Date(period.start)
         const newDateEnd = new Date(period.end)

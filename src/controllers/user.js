@@ -133,6 +133,14 @@ const saveSchedule = async (req, res) => {
         if(err || !medico){ return res.sendStatus(401) }
 
         await db.query('DELETE FROM horarios WHERE medico = ?',[medico])
+
+        console.log(monday)
+        console.log(tuesday)
+        console.log(wednesday)
+        console.log(thursday)
+        console.log(friday)
+        console.log(saturday)
+        console.log(sunday)
     
         await setScheduleDay(monday, 1, medico)
         await setScheduleDay(tuesday, 2, medico)
@@ -365,7 +373,7 @@ const createUser = async (req, res) => {
 
         if(userType.value !== "ASISTENTE"){
             const newDoctor = await db.query('INSERT INTO medicos (cargo, tipo) VALUES (?, ?)', [speciality, doctorType.value])
-            const newUser = await db.query('INSERT INTO usuarios (email,  medico, tipo) VALUES (?, ?, ?)', [email, newDoctor.insertId, userType.value])
+            const newUser = await db.query('INSERT INTO usuarios (email, medico, tipo) VALUES (?, ?, ?)', [email, newDoctor.insertId, userType.value])
             doctorID = newDoctor.insertId
             id = newUser.insertId
         }else{
