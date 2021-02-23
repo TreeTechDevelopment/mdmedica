@@ -91,17 +91,22 @@ const validUserToken = async (req, res) => {
 
         let emailUser = ''
         let doctorType = ''
+        let userType = ''
+        let name = ''
 
         if(!email){ 
-            const user = await db.query('SELECT email FROM clientes WHERE id = ?', [id]) 
+            const user = await db.query('SELECT email, nombre FROM clientes WHERE id = ?', [id]) 
             emailUser = user[0].email
+            name = user[0].nombre
+            userType = 'CLIENTE'
         }else{
-            const doctor = await db.query('SELECT usuarios.cargo, medicos.cargo AS medcargo FROM medicos INNER JOIN usuarios ON usuarios.medico = medicos.id WHERE usuarios.id = ?',[id])
+            const doctor = await db.query('SELECT usuarios.cargo, medicos.cargo, usuarios.tipo AS medcargo FROM medicos INNER JOIN usuarios ON usuarios.medico = medicos.id WHERE usuarios.id = ?',[id])
             if(doctor[0].cargo){ doctorType = doctor[0].cargo }
             else{ doctorType = doctor[0].medcargo }
+            userType = doctor[0].tipo
         }
 
-        res.json({ email: email || emailUser, doctorType })
+        res.json({ email: email || emailUser, doctorType, name, userType })
     }catch(e){
         console.log(e)
         res.sendStatus(500)
@@ -203,10 +208,6 @@ const getUser = async (req, res) => {
         const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'PF'])
         const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [id, 'H'])
 
-        console.log(EP)
-        console.log(PF)
-        console.log(H)
-
         if(EP.length !== 0){ user[0].enfermedades = EP }
         if(PF.length !== 0){ user[0].enfermedadesFam = PF }
         if(H.length !== 0){ user[0].habitos = H }
@@ -270,14 +271,17 @@ const getInfo = async (req, res) => {
     try{
         if(JSON.stringify(req.query) === "{}"){ return res.sendStatus(400) }
 
-        const { disccountInfo, images } = req.query
+        const { disccountInfo, images, services } = req.query
 
         if(disccountInfo === "true"){
             let text = await db.query('SELECT * FROM textos WHERE id = 1')
             return res.json({ ...text[0] })
         }else if(images === "true"){
-            let images = await db.query('SELECT * FROM imagenes')
+            let images = await db.query('SELECT * FROM imagenes WHERE tipo = ?', ['CARRUSEL'])
             return res.json({ images })
+        }else if(services === "true"){
+            let images = await db.query('SELECT * FROM imagenes WHERE tipo = ?', ['SERVICIO'])
+            return res.json({ image: images[0] })
         }
 
         return res.sendStatus(400)

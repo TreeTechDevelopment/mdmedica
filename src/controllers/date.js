@@ -93,7 +93,7 @@ const getDate = async (req, res) => {
         }else{
             date = await db.query(`SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
                                     clientes.alergias, clientes.contacto, clientes.sangre, citas.pagado, clientes.rh, medicos.nombre AS doctor FROM servicioCitas 
-                                    INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id 
+                                    INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id INNER JOIN medicos ON servicioCitas.medico = medicos.id
                                     WHERE servicioCitas.cita = ? AND servicioCitas.medico = ? AND servicioCitas.aprobado = 1`, [id, medico])
             if(tipo === "LAB"){
                 params = await getParams(date)
@@ -103,12 +103,14 @@ const getDate = async (req, res) => {
             }
         }
 
-        const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'EP'])
-        const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'PF'])
-        const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'H'])
-        date[0].enfermedades = EP
-        date[0].enfermedadesFam = PF
-        date[0].habitos = H
+        if(medico){
+            const EP = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'EP'])
+            const PF = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'PF'])
+            const H = await db.query('SELECT texto FROM enfermedadesCliente WHERE cliente = ? AND tipo = ?', [date[0].cliente, 'H'])
+            date[0].enfermedades = EP
+            date[0].enfermedadesFam = PF
+            date[0].habitos = H
+        }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
         .json({ date, recipe, params, results })
@@ -157,7 +159,7 @@ const getDatesHistory = async (req, res) => {
             }
         }else{
             dates = await db.query(`SELECT servicioCitas.id, citas.padecimiento, fecha, aprobado, medicos.nombre, medicos.cargo, medico, servicio, 
-                                    servicios.nombre AS servnombre, citas.pagado, citas.direccion FROM servicioCitas 
+                                    servicios.nombre AS servnombre, citas.pagado, citas.direccion, medicos.tipo FROM servicioCitas 
                                     INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN medicos ON servicioCitas.medico = medicos.id 
                                     LEFT JOIN servicios ON servicioCitas.servicio = servicios.id 
                                     WHERE citas.cliente = ? ORDER BY citas.fecha DESC LIMIT ?, ?`, [user, Number(start), Number(start)+20])

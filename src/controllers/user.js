@@ -69,7 +69,7 @@ const getInfoUser = async (req, res) => {
 
         const userDB = await db.query('SELECT nombre, cargo, imagen, tipo FROM usuarios WHERE id = ?', [id])
 
-        if(userDB[0].tipo !== "ASISTENTE" || getDoctor){ user = await db.query('SELECT nombre, cargo, descripcion, imagen, facebook, instagram, telefono FROM medicos WHERE id = ?', [medico]) }
+        if(userDB[0].tipo !== "ASISTENTE" || getDoctor){ user = await db.query('SELECT nombre, cargo, descripcion, imagen, facebook, instagram, telefono, precio, precioDomicilio FROM medicos WHERE id = ?', [medico]) }
         else{ user = userDB }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
@@ -84,7 +84,7 @@ const editUser = async (req, res) => {
     try{
         const image = req.file
         const { token } = req
-        const { name, type, description, facebook, instagram, phone } = req.body
+        const { name, type, description, facebook, instagram, phone, price, priceHome } = req.body
         const { setDoctor } = req.query
 
     
@@ -99,9 +99,9 @@ const editUser = async (req, res) => {
         if(user[0].tipo !== "ASISTENTE" || setDoctor){
             if(image){
                 let resImage = await uploadToCloudinary(image.buffer.toString('base64'), `medico_${medico}`) 
-                await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, imagen = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, resImage.url, phone, medico])
+                await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, imagen = ?, telefono = ?, precio = ?, precioDomicilio = ? WHERE id = ?', [name, type, description, facebook, instagram, resImage.url, phone, price, priceHome, medico])
             }else{
-                await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, telefono = ? WHERE id = ?', [name, type, description, facebook, instagram, phone, medico])
+                await db.query('UPDATE medicos SET nombre = ?, cargo = ?, descripcion = ?, facebook = ?, instagram = ?, telefono = ?, precio = ?, precioDomicilio = ? WHERE id = ?', [name, type, description, facebook, instagram, phone, price, priceHome, medico])
             }
         }else{
             if(image){
@@ -187,22 +187,28 @@ const getSchedule = async (req, res) => {
 const updateImages = async (req, res) => {
     try{
         const { token, files } = req
-        const { deletedImgs } = req.body
-        
-        const dImgs = JSON.parse(deletedImgs)
+        const { deletedImgs, updateType } = req.body
 
         const { err, tipo } = await validToken(token)
 
         if(err || !tipo || tipo !== "ADMIN"){ return res.sendStatus(401) }
 
-        for(let i = 0; i < files.length; i++){
-            let resImage = await uploadToCloudinary(files[i].buffer.toString('base64'), `carrusel_${i + Date.now()}`)
-            await db.query('INSERT INTO imagenes (url) VALUES (?)', [resImage.url])
-        }
+        if(updateType === "SERVICIO"){
+            await db.query('DELETE FROM imagenes WHERE tipo = ?', ['SERVICIO'])
+            let resImage = await uploadToCloudinary(files[0].buffer.toString('base64'), `servicios_${Date.now()}`)
+            await db.query('INSERT INTO imagenes (url, tipo) VALUES (?, ?)', [resImage.url, 'SERVICIO'])
+        }else{
+            const dImgs = JSON.parse(deletedImgs)
 
-        for(let i = 0; i < dImgs.length; i++){
-            await removeCloudinary(dImgs[i].url)
-            await db.query('DELETE FROM imagenes WHERE id = ?', [dImgs[i].id])
+            for(let i = 0; i < files.length; i++){
+                let resImage = await uploadToCloudinary(files[i].buffer.toString('base64'), `carrusel_${i + Date.now()}`)
+                await db.query('INSERT INTO imagenes (url) VALUES (?)', [resImage.url])
+            }
+    
+            for(let i = 0; i < dImgs.length; i++){
+                await removeCloudinary(dImgs[i].url)
+                await db.query('DELETE FROM imagenes WHERE id = ?', [dImgs[i].id])
+            }
         }
 
         res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
