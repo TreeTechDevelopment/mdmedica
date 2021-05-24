@@ -27,7 +27,7 @@ CREATE TABLE servicios(
     precio INT NOT NULL,
     precioDomicilio INT NOT NULL,
     tipo INT NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
     CONSTRAINT fk_tipo FOREIGN KEY (tipo) REFERENCES laboratorios(id)
 )
 
@@ -133,9 +133,12 @@ CREATE TABLE jwtBlockList(
     PRIMARY KEY (id)
 )
 
+---------  TABLA MODIFICADA --------
+
 CREATE TABLE imagenes(
     id INT NOT NULL AUTO_INCREMENT,
     url VARCHAR(300) NOT NULL,
+    tipo VARCHAR(10) DEFAULT 'CARRUSEL',
     PRIMARY KEY (id)
 )
 
@@ -155,7 +158,7 @@ CREATE TABLE enfermedadesCliente(
     tipo VARCHAR(2) NOT NULL,
     cliente INT NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_cliente_enfermedad FOREIGN KEY (cliente) REFERENCES clientes(id),
+    CONSTRAINT fk_cliente_enfermedad FOREIGN KEY (cliente) REFERENCES clientes(id)
 )
 
 CREATE TABLE parametros( 

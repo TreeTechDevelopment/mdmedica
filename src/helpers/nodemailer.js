@@ -1,11 +1,23 @@
 const nodemailer = require("nodemailer");
 const hbs = require('nodemailer-express-handlebars');
 const path = require('path')
-const fs = require('fs')
 
 const { createJWTEmailConfirmation } = require('./jwt')
 
+const smtpEndpoint = "email-smtp.us-east-2.amazonaws.com";
+const port = 587;
+
 const transporter = nodemailer.createTransport({
+  host: smtpEndpoint,
+  port: port,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.AWS_SES_SMTP_USERNAME,
+    pass: process.env.AWS_SES_SMTP_PASSWORD
+  }
+});
+
+/* const transporter = nodemailer.createTransport({
     host: process.env.SMTP_SERVER_NAME,
     port: 465,
     secure: true, 
@@ -23,7 +35,9 @@ const transporter = nodemailer.createTransport({
       //privateKey: fs.readFileSync(path.resolve(__dirname, '../certificates/dkim_private.pem'))
       privateKey: `-----BEGIN RSA PRIVATE KEY-----\n${process.env.DKIM_PRIVATE}\n-----END RSA PRIVATE KEY-----`
     }
-});
+}); */
+
+
 
 transporter.use('compile', hbs({
   viewEngine: {
@@ -51,7 +65,7 @@ const sendEmailConfirmation = async (user) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'contacto@treetechdevelopment.com'
+              address: 'no-reply@mdmedica.xyz'
             }, 
             to: user.email, 
             subject: "Verificación de Email", 
@@ -73,36 +87,35 @@ const sendEmailConfirmation = async (user) => {
 const sendEmailForgotPassword = async (user) => {
 
   let sent = false
-    let tries = 0
-    do{
-        try{
-            const token = createJWTEmailConfirmation({ id: user.id })
+  let tries = 0
+  do{
+      try{
+          const token = createJWTEmailConfirmation({ id: user.id })
 
-            const context = {
-              title: 'RECUPERAR CONTRASEÑA',
-              text: 'Da click en sl siguiente botón para cambiar tu contraseña',
-              name: user.name, 
-              token,
-            }
-          
-            await transporter.sendMail({
-              from: {
-                name: 'MD MEDICA',
-                address: 'contacto@treetechdevelopment.com'
-              }, 
-              to: user.email, 
-              subject: "Cambiar Contraseña", 
-              template: 'password',
-              context,
-              text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
-            });
-            sent = true
-        }catch(e){
-            console.log(e)
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            tries++
-        }
-    }while(!sent && tries < 3)
+          const context = {
+            title: 'RECUPERAR CONTRASEÑA',
+            text: 'Da click en sl siguiente botón para cambiar tu contraseña',
+            name: user.name, 
+            token,
+          }
+        
+          await transporter.sendMail({
+            from: {
+              name: 'MD MEDICA',
+              address: 'no-reply@mdmedica.xyz'
+            }, 
+            to: user.email, 
+            subject: "Cambiar Contraseña", 
+            template: 'password',
+            context,
+            text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
+          });
+      }catch(e){
+          console.log(e)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          tries++
+      }
+  }while(!sent && tries < 3)
 }
 
 const sendEmailDate = async (data, exp) => {
@@ -124,7 +137,7 @@ const sendEmailDate = async (data, exp) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'contacto@treetechdevelopment.com'
+              address: 'no-reply@mdmedica.xyz'
             }, 
             to: data.email, 
             subject: "Cita", 
@@ -158,7 +171,7 @@ const sendEmailStatusDate = async (data) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'contacto@treetechdevelopment.com'
+              address: 'no-reply@mdmedica.xyz'
             }, 
             to: data.email, 
             subject: "Cita", 
@@ -193,7 +206,7 @@ const sendEmailNewUser = async (data) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'contacto@treetechdevelopment.com'
+              address: 'no-reply@mdmedica.xyz'
             }, 
             to: data.email, 
             subject: "Confirmación", 
@@ -228,7 +241,7 @@ const sendEmailReminder = async (data) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'contacto@treetechdevelopment.com'
+              address: 'no-reply@mdmedica.xyz'
             }, 
             to: data.email, 
             subject: "Recordatorio", 
