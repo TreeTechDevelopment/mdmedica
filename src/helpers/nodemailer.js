@@ -71,7 +71,7 @@ const sendEmailConfirmation = async (user) => {
             subject: "Verificación de Email", 
             template: 'confirmation',
             context,
-            text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.herokuapp.com/registro?token=${context.token}`
+            text: `Hola, ${context.name}. \nBienvenido a MD Médica \nPara completar la verificación accede a https://mdmedica.xyz/registro?token=${context.token}`
           });
           sent = true
         }catch(e){
@@ -108,7 +108,7 @@ const sendEmailForgotPassword = async (user) => {
             subject: "Cambiar Contraseña", 
             template: 'password',
             context,
-            text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.herokuapp.com/recuperar?token=${context.token}`
+            text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.xyz/recuperar?token=${context.token}`
           });
       }catch(e){
           console.log(e)
@@ -212,7 +212,7 @@ const sendEmailNewUser = async (data) => {
             subject: "Confirmación", 
             template: 'user',
             context,
-            text: `Bienvenido a MD MÉDICA. \nPara ingresar a tu cuenta debes crear una contraseña accediendo al siguiente enlace. \nhttps://mdmedica.herokuapp.com/admin/password?token=${token}`
+            text: `Bienvenido a MD MÉDICA. \nPara ingresar a tu cuenta debes crear una contraseña accediendo al siguiente enlace. \nhttps://mdmedica.xyz/admin/password?token=${token}`
           });
           sent = true
       }catch(e){
