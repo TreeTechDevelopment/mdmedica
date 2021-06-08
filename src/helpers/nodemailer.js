@@ -4,16 +4,19 @@ const path = require('path')
 
 const { createJWTEmailConfirmation } = require('./jwt')
 
-const smtpEndpoint = "email-smtp.us-east-2.amazonaws.com";
+const smtpEndpoint = "smtp.office365.com";
 const port = 587;
+
+console.log(process.env.OUTLOOK_EMAIL)
 
 const transporter = nodemailer.createTransport({
   host: smtpEndpoint,
-  port: port,
   secure: false, // true for 465, false for other ports
+  port,
+  tls: {ciphers: 'SSLv3'},
   auth: {
-    user: process.env.AWS_SES_SMTP_USERNAME,
-    pass: process.env.AWS_SES_SMTP_PASSWORD
+    user: process.env.OUTLOOK_EMAIL,
+    pass: process.env.OUTLOOK_PASS
   }
 });
 
@@ -37,7 +40,11 @@ const transporter = nodemailer.createTransport({
     }
 }); */
 
+transporter.verify((e, success) => {
+  if(e) return console.log(e);
+  console.log("SERVER IS READY FOR SENDING EMAILS")
 
+})
 
 transporter.use('compile', hbs({
   viewEngine: {
@@ -47,6 +54,7 @@ transporter.use('compile', hbs({
   },
   viewPath: path.resolve(__dirname, '../templates/')
 }));
+
 
 const sendEmailConfirmation = async (user) => {
     let sent = false
@@ -61,11 +69,11 @@ const sendEmailConfirmation = async (user) => {
             name: user.name, 
             token,
           }
-        
+
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'no-reply@mdmedica.xyz'
+              address: process.env.OUTLOOK_EMAIL
             }, 
             to: user.email, 
             subject: "Verificación de Email", 
@@ -102,7 +110,7 @@ const sendEmailForgotPassword = async (user) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'no-reply@mdmedica.xyz'
+              address: process.env.OUTLOOK_EMAIL
             }, 
             to: user.email, 
             subject: "Cambiar Contraseña", 
@@ -137,7 +145,7 @@ const sendEmailDate = async (data, exp) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'no-reply@mdmedica.xyz'
+              address: process.env.OUTLOOK_EMAIL
             }, 
             to: data.email, 
             subject: "Cita", 
@@ -171,7 +179,7 @@ const sendEmailStatusDate = async (data) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'no-reply@mdmedica.xyz'
+              address: process.env.OUTLOOK_EMAIL
             }, 
             to: data.email, 
             subject: "Cita", 
@@ -206,7 +214,7 @@ const sendEmailNewUser = async (data) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'no-reply@mdmedica.xyz'
+              address: process.env.OUTLOOK_EMAIL
             }, 
             to: data.email, 
             subject: "Confirmación", 
@@ -214,6 +222,7 @@ const sendEmailNewUser = async (data) => {
             context,
             text: `Bienvenido a MD MÉDICA. \nPara ingresar a tu cuenta debes crear una contraseña accediendo al siguiente enlace. \nhttps://mdmedica.xyz/admin/password?token=${token}`
           });
+          //sendEmail(data.email, "Confirmación")
           sent = true
       }catch(e){
           console.log(e)
@@ -241,7 +250,7 @@ const sendEmailReminder = async (data) => {
           await transporter.sendMail({
             from: {
               name: 'MD MEDICA',
-              address: 'no-reply@mdmedica.xyz'
+              address: process.env.OUTLOOK_EMAIL
             }, 
             to: data.email, 
             subject: "Recordatorio", 

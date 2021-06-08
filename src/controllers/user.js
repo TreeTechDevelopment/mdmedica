@@ -356,6 +356,8 @@ const createUser = async (req, res) => {
         const { token } = req
         const { email, userType, speciality, doctorType,  asisType } = req.body
 
+        console.log(req.body)
+
         if(!email || !userType || !speciality || (userType.value === "MEDICO" && !doctorType) || (userType.value === "ASISTENTE" && !asisType)){ return res.sendStatus(400) }
 
         const { err, tipo } = await validToken(token)
@@ -370,7 +372,7 @@ const createUser = async (req, res) => {
         let doctorID = null
 
         if(userType.value !== "ASISTENTE"){
-            const newDoctor = await db.query('INSERT INTO medicos (cargo, tipo) VALUES (?, ?)', [speciality, doctorType.value])
+            const newDoctor = await db.query('INSERT INTO medicos (cargo, tipo) VALUES (?, ?)', [speciality, doctorType ? doctorType.value : ''])
             const newUser = await db.query('INSERT INTO usuarios (email, medico, tipo) VALUES (?, ?, ?)', [email, newDoctor.insertId, userType.value])
             doctorID = newDoctor.insertId
             id = newUser.insertId
