@@ -6,3 +6,5 @@ src/certificates
 mercadopago-users.txt
 
 ssl/
+
+src/testing
