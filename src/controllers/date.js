@@ -82,7 +82,7 @@ const getDate = async (req, res) => {
         let results = []
 
         if(!isNaN(Number(serv_id))){
-            date = await db.query(`SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
+            date = await db.query(`SELECT servicioCitas.servicio, servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
                                     clientes.alergias, clientes.contacto, clientes.rh, clientes.sangre, citas.pagado, clientes.direccion AS clienteDireccion, servicios.nombre AS servnombre, 
                                     servicios.id AS servId, servicios.tipo AS servtipo, medicos.nombre AS doctor FROM servicioCitas 
                                     INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
@@ -91,9 +91,10 @@ const getDate = async (req, res) => {
             params = await getParams(date)
             results = await db.query('SELECT * FROM resultados WHERE cita = ?', [id])
         }else{
-            date = await db.query(`SELECT servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
+            date = await db.query(`SELECT servicios.nombre AS servnombre, servicioCitas.servicio, servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
                                     clientes.alergias, clientes.contacto, clientes.sangre, citas.pagado, clientes.rh, medicos.nombre AS doctor FROM servicioCitas 
                                     INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id INNER JOIN medicos ON servicioCitas.medico = medicos.id
+                                    LEFT JOIN servicios ON servicioCitas.servicio = servicios.id
                                     WHERE servicioCitas.cita = ? AND servicioCitas.medico = ? AND servicioCitas.aprobado = 1`, [id, medico])
             if(tipo === "LAB"){
                 params = await getParams(date)
