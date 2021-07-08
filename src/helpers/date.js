@@ -38,11 +38,11 @@ const dateInPeriod = (schedule, date) => {
 const checkDateNoDuplicate = async (date, doctor, labs) => {
     let okDate = true
     if(doctor){
-        const dateDB = await db.query('SELECT servicioCitas.id FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id WHERE citas.fecha = ? AND medico = ?', [new Date(date).toLocaleString(), doctor.id])
+        const dateDB = await db.query('SELECT servicioCitas.id FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id WHERE citas.fecha = ? AND medico = ?', [new Date(date), doctor.id])
         if(dateDB.length !== 0){ okDate = false }
     }else{
         for(let i = 0; i < labs.length; i++){
-            const dateDB = await db.query('SELECT servicioCitas.id FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id WHERE citas.fecha = ? AND servicio = ?', [new Date(date).toLocaleString(), labs[i].id])
+            const dateDB = await db.query('SELECT servicioCitas.id FROM servicioCitas INNER JOIN citas ON servicioCitas.cita = citas.id WHERE citas.fecha = ? AND servicio = ?', [new Date(date), labs[i].id])
             if(dateDB.length !== 0){ okDate = false }
         }
     }
@@ -50,7 +50,7 @@ const checkDateNoDuplicate = async (date, doctor, labs) => {
 }
 
 const getQuery = (date, age, name, illness, phone, email, type, address, clientID, homeService, sex) => {
-    let query = [{ row: 'fecha', value: new Date(date).toLocaleString() },{ row: 'edad', value: age },{ row: 'nombre', value: name },{ row: 'padecimiento', value: illness },
+    let query = [{ row: 'fecha', value: new Date(date) },{ row: 'edad', value: age },{ row: 'nombre', value: name },{ row: 'padecimiento', value: illness },
     { row: 'telefono', value: phone },{ row: 'email', value: email },{ row: 'tipo', value: type === "medico" ? false : true }, { row: 'sexo', value: sex }]
 
     if(homeService === true){ query.push({ row: 'direccion', value: address }) }
