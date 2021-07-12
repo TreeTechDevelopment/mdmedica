@@ -372,7 +372,7 @@ const createUser = async (req, res) => {
         let doctorID = null
 
         if(userType.value !== "ASISTENTE"){
-            const newDoctor = await db.query('INSERT INTO medicos (cargo, tipo) VALUES (?, ?)', [speciality, doctorType ? doctorType.value : ''])
+            const newDoctor = await db.query('INSERT INTO medicos (cargo, tipo) VALUES (?, ?)', [speciality, doctorType ? doctorType.value : 'QUIMICO'])
             const newUser = await db.query('INSERT INTO usuarios (email, medico, tipo) VALUES (?, ?, ?)', [email, newDoctor.insertId, userType.value])
             doctorID = newDoctor.insertId
             id = newUser.insertId
