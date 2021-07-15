@@ -256,7 +256,7 @@ const sendEmailReminder = async (data) => {
             subject: "Recordatorio", 
             template: 'reminder',
             context,
-            text: `Hola, ${ context.name } \nRecuerda que tienes una cita ${ text }, para el ${ date }.`
+            text: `Hola, ${ context.name } \nRecuerda que tienes una cita ${ context.text }, para el ${ context.date }.`
           });
           sent = true
       }catch(e){

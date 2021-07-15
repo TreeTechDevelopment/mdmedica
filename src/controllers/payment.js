@@ -1,7 +1,7 @@
 const db = require('../db/db')
 
 const { validTokenEmail } = require('../helpers/jwt')
-const { createPreferencID } = require('../helpers/mercadopago')
+const { createPreferencID, getTotal } = require('../helpers/mercadopago')
 
 const getInfo = async (req, res) => {
     try{
@@ -24,7 +24,9 @@ const getInfo = async (req, res) => {
 
         if(resDB.length !== 0){ preferenceID = await createPreferencID(resDB, tipo, token) }
 
-        res.json({ date: resDB, type: tipo, preferenceID })
+        const total = getTotal(resDB)
+
+        res.json({ date: resDB, type: tipo, preferenceID, total })
 
     }catch(e){
         console.log(e)

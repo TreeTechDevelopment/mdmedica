@@ -289,7 +289,7 @@ const aproveDate = async (req, res) => {
             const text = tipo !== "LAB" ? `Se ha confirmado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre}.` : 
                         `Se ha confirmado tu cita el ${dateEmail}, para los siguientes laboratorios: ${servnombre}.`
 
-            await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE medico = ? AND cita = ?", [medico, cita])
+            await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE id = ?", [id])
 
             try{ await sendEmailStatusDate({ email, name: nombre, text }) }
             catch(e){
@@ -302,7 +302,7 @@ const aproveDate = async (req, res) => {
                         `Se ha rechazado tu cita el ${dateEmail}, para los siguientes laboratorios: ${servnombre}.` 
             try{ 
                 await sendEmailStatusDate({ email, name: nombre, text }) 
-                await db.query("DELETE FROM servicioCitas WHERE cita = ? AND medico = ?", [cita, medico])
+                await db.query("DELETE FROM servicioCitas WHERE id = ?", [id])
             }
             catch(e){
                 console.log(e)
