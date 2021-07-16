@@ -6,7 +6,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const setPrecioDomicilio = require('./src/testing/setPrecioDomicilio')
+//const setPrecioDomicilio = require('./src/testing/setPrecioDomicilio')
 require('./src/helpers/cronjobs')
 
 const app = express()
@@ -23,5 +23,5 @@ app.use(routes)
 
 app.listen(PORT, async () => {
     console.log(`SERVER ON PORT ${PORT}`)
-    setPrecioDomicilio()
+    //setPrecioDomicilio()
 })

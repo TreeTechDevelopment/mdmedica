@@ -35,11 +35,20 @@ const createPreferencID = (date, dateType, token) => {
     })
 
     if(date.some(dateItem => !!dateItem.direccion)){
-        preference.items.push({
-            title: 'Servicio a domicilio',
-            unit_price: 100,
-            quantity: 1
-        })
+        if(dateType === "medico"){
+            preference.items.push({
+                title: 'Servicio a domicilio',
+                unit_price: dateItem[0].precioDomicilio,
+                quantity: 1
+            })
+        }else{
+            preference.items.push({
+                title: 'Servicio a domicilio',
+                unit_price: 100,
+                quantity: 1
+            })
+        }
+
     }
 
     return new Promise((resolve, reject) => {
@@ -52,7 +61,7 @@ const createPreferencID = (date, dateType, token) => {
     })
 }
 
-const getTotal =  (dateItems) => {
+const getTotal =  (dateItems, dateType) => {
 
     let total = 0
 
@@ -60,7 +69,10 @@ const getTotal =  (dateItems) => {
         total += dateItem.precio
     }
 
-    if(dateItems.some(dateItem => !!dateItem.direccion)) total += 100
+    if(dateItems.some(dateItem => !!dateItem.direccion)){
+        if(dateType === 'medico') total += dateItems[0].precioDomicilio
+        else total += 100
+    }
 
     return total
 }
