@@ -4,12 +4,23 @@ const { validToken } = require('../helpers/jwt')
 
 const getAllMedicos = async (req, res) => {
     try{
-        const { schedule } = req.query
+        const { schedule, getChemistry } = req.query
 
         let schedules = []
-        let doctors = await db.query('SELECT * FROM medicos WHERE activo = 1') 
+        let doctors = []
 
-        if(schedule){ schedules = await db.query('SELECT medico, dia, inicio, final FROM horarios INNER JOIN medicos ON medicos.id = horarios.medico WHERE medicos.tipo != ?', ['QUIMICO']) }
+        if(getChemistry){
+            if(getChemistry === "true") doctors = await db.query('SELECT * FROM medicos WHERE activo = 1 AND tipo = ?', ['QUIMICO'])
+            else doctors = await db.query('SELECT * FROM medicos WHERE activo = 1 AND tipo != ?', ['QUIMICO'])
+        }else{
+            doctors = await db.query('SELECT * FROM medicos WHERE activo = 1')
+        }
+
+
+        if(schedule){
+            if(getChemistry === "true") schedules = await db.query('SELECT medico, dia, inicio, final FROM horarios INNER JOIN medicos ON medicos.id = horarios.medico WHERE medicos.tipo = ?', ['QUIMICO'])
+            else schedules = await db.query('SELECT medico, dia, inicio, final FROM horarios INNER JOIN medicos ON medicos.id = horarios.medico WHERE medicos.tipo != ?', ['QUIMICO'])
+        }
 
         res.json({ doctors, schedule: schedules })
     }catch(e){
