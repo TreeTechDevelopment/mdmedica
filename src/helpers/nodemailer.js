@@ -118,6 +118,7 @@ const sendEmailForgotPassword = async (user) => {
             context,
             text: `Hola, ${context.name}. \nPara cambiar tu contraseña accede a https://mdmedica.xyz/recuperar?token=${context.token}`
           });
+          sent = true
       }catch(e){
           console.log(e)
           await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -126,20 +127,17 @@ const sendEmailForgotPassword = async (user) => {
   }while(!sent && tries < 3)
 }
 
-const sendEmailDate = async (data, exp) => {
+const sendEmailDate = async (data) => {
 
   let sent = false
   let tries = 0
   do{
       try{
-          const token = createJWTEmailConfirmation({ cita: data.dateID, tipo: data.type }, exp)
-
           const context = {
             title: 'AGENDAR CITA',
             name: data.name,
             date: data.date,
             text: data.text,
-            token
           }
         
           await transporter.sendMail({
@@ -164,16 +162,18 @@ const sendEmailDate = async (data, exp) => {
   
 }
 
-const sendEmailStatusDate = async (data) => {
+const sendEmailStatusDate = async (data, exp) => {
 
   let sent = false
   let tries = 0
   do{
       try{
+          const token = createJWTEmailConfirmation({ cita: data.dateID, tipo: data.type }, exp)
           const context = {
             title: 'CITA',
             name: data.name,
-            text: data.text
+            text: data.text,
+              token
           }
         
           await transporter.sendMail({
@@ -195,7 +195,39 @@ const sendEmailStatusDate = async (data) => {
       }
   }while(!sent && tries < 3)
 
-  
+}
+
+const sendEmailStatusDateRejected = async (data, exp) => {
+
+    let sent = false
+    let tries = 0
+    do{
+        try{
+            const context = {
+                title: 'CITA',
+                name: data.name,
+                text: data.text,
+            }
+
+            await transporter.sendMail({
+                from: {
+                    name: 'MD MEDICA',
+                    address: process.env.OUTLOOK_EMAIL
+                },
+                to: data.email,
+                subject: "Cita",
+                template: 'dateReject',
+                context,
+                text: `Hola, ${context.name}. \n${context.text}`
+            });
+            sent = true
+        }catch(e){
+            console.log(e)
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            tries++
+        }
+    }while(!sent && tries < 3)
+
 }
 
 const sendEmailNewUser = async (data) => {
@@ -275,5 +307,6 @@ module.exports ={
   sendEmailDate,
   sendEmailStatusDate,
   sendEmailNewUser,
-  sendEmailReminder
+  sendEmailReminder,
+    sendEmailStatusDateRejected
 }

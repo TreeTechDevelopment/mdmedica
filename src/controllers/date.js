@@ -1,7 +1,7 @@
 const db = require('../db/db')
 
 const { validToken } = require('../helpers/jwt')
-const { sendEmailDate, sendEmailStatusDate } = require('../helpers/nodemailer')
+const { sendEmailDate, sendEmailStatusDate, sendEmailStatusDateRejected } = require('../helpers/nodemailer')
 const { getMonthName, twoDigits } = require('../helpers/common')
 const { checkDateHour, checkDateNoDuplicate, getQuery, checkDateTime, getParams } = require('../helpers/date')
 
@@ -43,9 +43,9 @@ const postDate = async (req, res) => {
             if(type === "medico"){ text = `con el médico ${doctor.name}` }
             else{ text = `para los laboratorios ${labs.map(lab => lab.name).join(', ')}` }
 
-            const exp = (newDate.getTime() - Date.now())/1000
 
-            await sendEmailDate({ date: dateEmail, email, name, text, dateID: resDB.insertId, type }, Math.round(exp))
+
+            await sendEmailDate({ date: dateEmail, email, name, text, dateID: resDB.insertId, type })
         }catch(e){
             console.log(e)
             await db.query('DELETE FROM servicioCitas WHERE cita = ?', [resDB.insertId]) 
@@ -285,13 +285,19 @@ const aproveDate = async (req, res) => {
         const newDate = new Date(fecha)
         const dateEmail = `${newDate.getDate()} de ${getMonthName(newDate.getMonth())} de ${newDate.getFullYear()} a las ${twoDigits(newDate.getHours())}:${twoDigits(newDate.getMinutes())}`
 
+        const dateDB = await db.query("SELECT cita FROM servicioCitas WHERE id = ?", [id])
+        const dateId = dateDB[0].cita
+
         if(aprove){
             const text = tipo !== "LAB" ? `Se ha confirmado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre}.` : 
                         `Se ha confirmado tu cita el ${dateEmail}, para los siguientes laboratorios: ${servnombre}.`
 
-            await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE id = ?", [id])
+            await db.query("UPDATE servicioCitas SET aprobado = 1 WHERE cita = ?", [dateId])
 
-            try{ await sendEmailStatusDate({ email, name: nombre, text }) }
+            try{
+                const exp = (newDate.getTime() - Date.now())/1000
+                await sendEmailStatusDate({ email, name: nombre, text, type: tipo, dateID: dateDB[0].cita }, Math.round(exp))
+            }
             catch(e){
                 console.log(e)
                 await db.query("UPDATE servicioCitas SET aprobado = 0 WHERE servicioCitas.medico = ? AND cita = ?", [medico, cita])
@@ -300,9 +306,9 @@ const aproveDate = async (req, res) => {
         }else{
             const text = tipo !== "LAB" ? `Se ha rechazado tu cita el ${dateEmail}, con el ${doctor[0].cargo} ${doctor[0].nombre} .` :
                         `Se ha rechazado tu cita el ${dateEmail}, para los siguientes laboratorios: ${servnombre}.` 
-            try{ 
-                await sendEmailStatusDate({ email, name: nombre, text }) 
-                await db.query("DELETE FROM servicioCitas WHERE id = ?", [id])
+            try{
+                await sendEmailStatusDateRejected({ email, name: nombre, text })
+                await db.query("DELETE FROM servicioCitas WHERE cita = ?", [dateId])
             }
             catch(e){
                 console.log(e)

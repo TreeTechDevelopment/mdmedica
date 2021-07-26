@@ -479,6 +479,50 @@ const getClientResults = async (req, res) => {
     }
 }
 
+const updateLabDescription = async (req, res) => {
+    try{
+        const { id, description } = req.body
+        const { token } = req
+
+        if(isNaN(Number(id)) || !description){ return res.sendStatus(400) }
+
+        const { err, tipo } = await validToken(token)
+
+        if(err || !tipo){ return res.sendStatus(401) }
+
+        await db.query('UPDATE laboratorios SET descripcion = ? WHERE id = ?', [description, Number(id)])
+
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
+            .sendStatus(200)
+
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500)
+    }
+}
+
+const updateServicePrice = async (req, res) => {
+    try{
+        const { id, price } = req.body
+        const { token } = req
+
+        if(isNaN(Number(id)) || !price){ return res.sendStatus(400) }
+
+        const { err, tipo } = await validToken(token)
+
+        if(err || !tipo){ return res.sendStatus(401) }
+
+        await db.query('UPDATE servicios SET precio = ?, precioDomicilio = ? WHERE id = ?', [price, price + 100, Number(id)])
+
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
+            .sendStatus(200)
+
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500)
+    }
+}
+
 
 module.exports = {
     login,
@@ -497,5 +541,7 @@ module.exports = {
     createUser,
     createPassword,
     getClient,
-    getClientResults
+    getClientResults,
+    updateLabDescription,
+    updateServicePrice
 }

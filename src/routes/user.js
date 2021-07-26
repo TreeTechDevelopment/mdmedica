@@ -6,8 +6,8 @@ const upload = multer({ storage: storage })
 
 const router = express.Router(); 
 
-const { login, validUserToken, getInfoUser, editUser, saveSchedule, getSchedule, deleteUser, createUser, createPassword,
-    updateImages, updateText, getReviews, updateReview, getUsers, getUser, getClient, getClientResults } = require('../controllers/user')
+const { login, validUserToken, getInfoUser, editUser, saveSchedule, getSchedule, deleteUser, createUser, createPassword,updateServicePrice,
+    updateImages, updateText, getReviews, updateReview, getUsers, getUser, getClient, getClientResults, updateLabDescription } = require('../controllers/user')
 const { cookiesAuthMiddleware } = require('../helpers/auth')
 
 router.get('/admin/user', cookiesAuthMiddleware, getInfoUser)
@@ -21,6 +21,8 @@ router.get('/admin/client/results', cookiesAuthMiddleware, getClientResults)
 
 router.post('/admin/login', login)
 router.post('/admin/schedule', cookiesAuthMiddleware, saveSchedule)
+router.post('/admin/labs/description', cookiesAuthMiddleware, updateLabDescription)
+router.post('/admin/service/price', cookiesAuthMiddleware, updateServicePrice)
 router.post('/admin/user', cookiesAuthMiddleware, createUser)
 
 router.put('/admin/user', cookiesAuthMiddleware, upload.single('image'), editUser)

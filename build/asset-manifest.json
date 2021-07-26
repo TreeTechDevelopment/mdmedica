@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/static/js/main.1f79b511.chunk.js",
-    "main.js.map": "/static/js/main.1f79b511.chunk.js.map",
+    "main.js": "/static/js/main.5ff4bfbe.chunk.js",
+    "main.js.map": "/static/js/main.5ff4bfbe.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.92ee656d.js",
     "runtime-main.js.map": "/static/js/runtime-main.92ee656d.js.map",
     "static/css/2.07708f5f.chunk.css": "/static/css/2.07708f5f.chunk.css",
-    "static/js/2.9a7eb2ef.chunk.js": "/static/js/2.9a7eb2ef.chunk.js",
-    "static/js/2.9a7eb2ef.chunk.js.map": "/static/js/2.9a7eb2ef.chunk.js.map",
+    "static/js/2.203dac02.chunk.js": "/static/js/2.203dac02.chunk.js",
+    "static/js/2.203dac02.chunk.js.map": "/static/js/2.203dac02.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.d36f6bea08dd48cd676c18262c601e7e.js": "/precache-manifest.d36f6bea08dd48cd676c18262c601e7e.js",
+    "precache-manifest.324cc005d88222026a500f3f9d0b7c42.js": "/precache-manifest.324cc005d88222026a500f3f9d0b7c42.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.07708f5f.chunk.css.map": "/static/css/2.07708f5f.chunk.css.map",
-    "static/js/2.9a7eb2ef.chunk.js.LICENSE.txt": "/static/js/2.9a7eb2ef.chunk.js.LICENSE.txt",
+    "static/js/2.203dac02.chunk.js.LICENSE.txt": "/static/js/2.203dac02.chunk.js.LICENSE.txt",
     "static/media/Montserrat-Bold.ttf": "/static/media/Montserrat-Bold.ade91f47.ttf",
     "static/media/Montserrat-Italic.ttf": "/static/media/Montserrat-Italic.a7063e0c.ttf",
     "static/media/Montserrat-Light.ttf": "/static/media/Montserrat-Light.409c7f79.ttf",
@@ -34,6 +34,7 @@
     "static/media/img4.jpg": "/static/media/img4.34c6e2cd.jpg",
     "static/media/img5.jpeg": "/static/media/img5.2da5fb58.jpeg",
     "static/media/img6.jpg": "/static/media/img6.d600a66d.jpg",
+    "static/media/laboratory-blue.c4cd23d5.svg": "/static/media/laboratory-blue.c4cd23d5.svg",
     "static/media/laboratory.1ccd8e1a.svg": "/static/media/laboratory.1ccd8e1a.svg",
     "static/media/logo-blue.42d457b3.svg": "/static/media/logo-blue.42d457b3.svg",
     "static/media/logo-white.d600048c.svg": "/static/media/logo-white.d600048c.svg",
@@ -57,7 +58,7 @@
   "entrypoints": [
     "static/js/runtime-main.92ee656d.js",
     "static/css/2.07708f5f.chunk.css",
-    "static/js/2.9a7eb2ef.chunk.js",
-    "static/js/main.1f79b511.chunk.js"
+    "static/js/2.203dac02.chunk.js",
+    "static/js/main.5ff4bfbe.chunk.js"
   ]
 }

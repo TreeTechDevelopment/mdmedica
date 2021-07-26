@@ -42,24 +42,6 @@
 
         .content{ margin-top: 1rem; }
 
-        .btn-container{
-            width: 100%;
-            text-align: center;
-            vertical-align: middle;
-            margin-bottom: 1vw;
-            height: 2vw;
-        }
-
-        .btn{
-            background-color: rgb(0,47,91);
-            padding: 0.5vw 1vw;
-            border-radius:  0.3rem;
-            color: white !important;
-            text-decoration: none !important;
-            font-family: Montserrat, Arial, Helvetica, sans-serif;
-            font-size: 1.2rem;
-        }
-
         @media (max-width: 600px) {
             .header{ background-size: contain; }
             .title{ height: 12vmax }
@@ -67,8 +49,6 @@
                 font-size: 1.2rem; 
                 padding: 0.3rem 1rem;
             }
-            .table-btn{ height: 4rem; }
-            .btn{ padding: 0.5rem 1rem; } 
         }
     </style>
 </head>
@@ -96,13 +76,6 @@
         </tr>
         <tr width="100%">
             <td class="text">Espera el correo de confirmación de la cita.</td>
-        </tr>
-    </table>
-    <table width="100%" class="table-btn" role="presentation">
-        <tr width="100%">
-            <td class="btn-container">
-                <a href="https://mdmedica.xyz/cita/pago?token={{ token }}" class="btn">PAGAR</a>
-            </td>
         </tr>
     </table>
 </body>
