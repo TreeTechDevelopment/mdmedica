@@ -47,6 +47,8 @@ router.get('/admin/asistente/pacientes', handleClient)
 router.get('/admin/asistente/pacientes/:id', handleClient)
 router.get('/admin/asistente/aprobar', handleClient)
 router.get('/admin/asistente/cita/:id', handleClient) 
+router.get('/admin/lab/resultados', handleClient)
+router.get('/admin/laboratorios', handleClient)
 
 router.get('/info', getInfo)
 router.get('/client', cookiesAuthMiddleware, getUser)
