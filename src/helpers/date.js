@@ -72,7 +72,14 @@ const getParams = async (dates) => {
     let newParams = []
     for(let i = 0; i < dates.length; i++){
         let service = undefined
-        const params = await db.query('SELECT parametros.id, tipo, unidades, minRef, maxRef, nombre, servicio FROM parametros INNER JOIN referencias ON parametros.id = referencias.param WHERE parametros.servicio = ? AND referencias.sexo = ? AND referencias.minEdad <= ? AND referencias.maxEdad >= ?', [dates[i].servId, dates[i].sexo, dates[i].edad, dates[i].edad])
+        let params = []
+        if(dates[i].sexo && dates[i].edad){
+            params = await db.query('SELECT parametros.id, tipo, unidades, minRef, maxRef, nombre, servicio FROM parametros INNER JOIN referencias ON parametros.id = referencias.param WHERE parametros.servicio = ? AND referencias.sexo = ? AND referencias.minEdad <= ? AND referencias.maxEdad >= ?', [dates[i].servId || dates[i].servicio, dates[i].sexo, dates[i].edad, dates[i].edad])
+        }else{
+            params = await db.query('SELECT id, tipo, unidades, nombre, servicio FROM parametros WHERE servicio = ?', [dates[i].servId || dates[i].servicio])
+        }
+
+        console.log(params)
 
         if(!params[0]) service = dates[0].servicio
         else service = params[0].servicio

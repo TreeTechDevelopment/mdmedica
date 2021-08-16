@@ -84,7 +84,7 @@ const getDate = async (req, res) => {
         if(!isNaN(Number(serv_id))){
             date = await db.query(`SELECT servicioCitas.servicio, servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.sexo, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
                                     clientes.alergias, clientes.contacto, clientes.rh, clientes.sangre, citas.pagado, clientes.direccion AS clienteDireccion, servicios.nombre AS servnombre, 
-                                    servicios.id AS servId, servicios.tipo AS servtipo, medicos.nombre AS doctor FROM servicioCitas 
+                                    servicios.id as servId, servicios.tipo AS servtipo, medicos.nombre AS doctor FROM servicioCitas 
                                     INNER JOIN citas ON servicioCitas.cita = citas.id INNER JOIN servicios ON servicioCitas.servicio = servicios.id 
                                     LEFT JOIN clientes ON citas.cliente = clientes.id INNER JOIN medicos ON servicioCitas.medico = medicos.id 
                                     WHERE servicioCitas.cita = ? AND servicioCitas.aprobado = 1 AND servicioCitas.servicio = ?`, [id, Number(serv_id)])
@@ -92,7 +92,7 @@ const getDate = async (req, res) => {
             results = await db.query('SELECT * FROM resultados WHERE cita = ?', [id])
         }else{
             date = await db.query(`SELECT servicios.nombre AS servnombre, servicioCitas.servicio, servicioCitas.id, fecha, citas.nombre, citas.edad, padecimiento, citas.telefono, citas.email, citas.cliente, citas.direccion, clientes.imagen, 
-                                    clientes.alergias, clientes.contacto, clientes.sangre, citas.pagado, clientes.rh, medicos.nombre AS doctor FROM servicioCitas 
+                                    clientes.alergias, clientes.contacto, clientes.sangre, citas.pagado, clientes.rh, clientes.sexo, medicos.nombre AS doctor FROM servicioCitas 
                                     INNER JOIN citas ON servicioCitas.cita = citas.id LEFT JOIN clientes ON citas.cliente = clientes.id INNER JOIN medicos ON servicioCitas.medico = medicos.id
                                     LEFT JOIN servicios ON servicioCitas.servicio = servicios.id
                                     WHERE servicioCitas.cita = ? AND servicioCitas.medico = ? AND servicioCitas.aprobado = 1`, [id, medico])
@@ -391,6 +391,50 @@ const postResults = async (req, res) => {
     }
 }
 
+const getServices = async (req, res) => {
+    try{
+        const { token } = req
+
+        if(!token){ return res.sendStatus(401) }
+
+        const { err, tipo } = await validToken(token)
+
+        if(err && !tipo){ return res.sendStatus(401) }
+
+        const services = await db.query('SELECT nombre, id FROM servicios')
+
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
+            .json({ services })
+
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500)
+    }
+}
+
+const getParamsService = async (req, res) => {
+    try{
+        const { token } = req
+        const { service } = req.body
+
+        if(!token){ return res.sendStatus(401) }
+        if(!service) return res.sendStatus(400)
+
+        const { err, tipo } = await validToken(token)
+
+        if(err && !tipo){ return res.sendStatus(401) }
+
+        const params = await getParams([{ servicio: service }])
+
+        res.cookie('payload', token.split('.')[0] + '.' + token.split('.')[1], { sameSite: true, maxAge: 1000 * 60 * 30 })
+            .json({ params })
+
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500)
+    }
+}
+
 module.exports={
     postDate,
     getDate,
@@ -399,5 +443,7 @@ module.exports={
     getDatesPatients,
     aproveDate,
     postRecipe,
-    postResults
+    postResults,
+    getServices,
+    getParamsService
 }
